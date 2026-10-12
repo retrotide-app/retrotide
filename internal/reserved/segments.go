@@ -27,6 +27,7 @@ var (
 		"register":          {},
 		"reset-password":    {},
 		"robots.txt":        {},
+		"self-host":         {},
 		"sitemap":           {},
 		"sitemap.xml":       {},
 		"templates":         {},

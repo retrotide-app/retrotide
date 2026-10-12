@@ -21,6 +21,7 @@ vi.mock("./pages/lazyPages", async () => {
         NotFoundPage: () => <h1>Not found page</h1>,
         PricingPage: () => <h1>Pricing page</h1>,
         CompareEasyRetroPage: () => <h1>Compare EasyRetro page</h1>,
+        SelfHostPage: () => <h1>Self-host page</h1>,
         TemplatesPage: () => <h1>Templates page</h1>,
         TemplatePage: () => <h1>Template page</h1>,
         LegalPage: () => <h1>Legal page</h1>,
@@ -909,6 +910,7 @@ describe("App marketing routes", () => {
     const pages = [
         { route: "/pricing", heading: "Pricing page" },
         { route: "/compare/easyretro", heading: "Compare EasyRetro page" },
+        { route: "/self-host", heading: "Self-host page" },
         { route: "/templates", heading: "Templates page" },
         { route: "/templates/sailboat", heading: "Template page" },
         { route: "/legal/privacy", heading: "Legal page" },

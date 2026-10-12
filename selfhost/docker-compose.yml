@@ -1,0 +1,104 @@
+name: retrotide
+
+x-settings:
+  site-address: &site-address http://localhost:8080
+  site-mode: &site-mode private
+  database-password: &database-password change-me-to-a-long-random-password
+  database-admin-password: &database-admin-password change-me-to-another-long-random-password
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
+services:
+  app:
+    image: ghcr.io/retrotide-app/retrotide:latest
+    restart: unless-stopped
+    logging: *logging
+    stop_grace_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    ports:
+      - "8080:4323"
+    environment:
+      BASE_URL: *site-address
+      SITE_MODE: *site-mode
+      DEPLOYMENT_MODE: self_hosted
+      LISTEN_ADDR: ":4323"
+      LOG_FORMAT: json
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: retrotide
+      POSTGRES_PASSWORD: *database-password
+      POSTGRES_DB: retrotide
+      VALKEY_URL: redis://valkey:6379
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  postgres:
+    image: postgres:18
+    user: postgres
+    restart: unless-stopped
+    logging: *logging
+    stop_grace_period: 60s
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: *database-admin-password
+      POSTGRES_DB: postgres
+      RETROTIDE_DB_PASSWORD: *database-password
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    configs:
+      - source: create-database
+        target: /docker-entrypoint-initdb.d/10-create-database.sql
+    shm_size: 256mb
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  valkey:
+    image: valkey/valkey:latest
+    user: valkey
+    restart: unless-stopped
+    logging: *logging
+    command: valkey-server --save "" --appendonly no --maxmemory 256mb --maxmemory-policy volatile-lru
+    read_only: true
+    tmpfs:
+      - /data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+configs:
+  create-database:
+    content: |
+      \getenv app_password RETROTIDE_DB_PASSWORD
+      CREATE ROLE retrotide LOGIN PASSWORD :'app_password';
+      CREATE DATABASE retrotide OWNER retrotide;
+
+volumes:
+  postgres-data:

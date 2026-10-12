@@ -5,6 +5,7 @@ import {
     LEGAL_LINKS,
     legalPath,
     PRICING_PATH,
+    SELF_HOST_PATH,
     TEMPLATES_PATH,
 } from "../../../domain/marketing";
 import { ButtonLink } from "../../Button/ButtonLink";
@@ -18,6 +19,7 @@ const SITE_LINKS = [
     { to: TEMPLATES_PATH, label: "Templates" },
     { to: PRICING_PATH, label: "Pricing" },
     { to: COMPARE_EASYRETRO_PATH, label: "Compare" },
+    { to: SELF_HOST_PATH, label: "Self-host" },
 ];
 
 const FOOTER_GROUPS = [
@@ -27,6 +29,7 @@ const FOOTER_GROUPS = [
             { to: TEMPLATES_PATH, label: "Templates" },
             { to: PRICING_PATH, label: "Pricing" },
             { to: COMPARE_EASYRETRO_PATH, label: "Compare with EasyRetro" },
+            { to: SELF_HOST_PATH, label: "Self-host" },
         ],
     },
     {

@@ -72,6 +72,9 @@ const (
 var (
 	//go:embed all:static
 	staticFiles embed.FS
+
+	//go:embed selfhost/docker-compose.yml
+	selfHostCompose []byte
 )
 
 type (
@@ -250,6 +253,7 @@ func initApp(svc *services, repos *repository.Repositories, settingsSvc settings
 		Guards:               guards,
 		WSHandler:            svc.wsHandler,
 		StaticFS:             svc.staticFS,
+		SelfHostCompose:      selfHostCompose,
 		OGResolver:           svc.ogResolver,
 		SitemapService:       svc.sitemap,
 	}

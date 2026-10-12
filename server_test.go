@@ -319,6 +319,8 @@ func TestInitApp_RouteTable(t *testing.T) {
 		"HEAD /uploads/:boardID/:file",
 		"GET /assets/*filepath",
 		"HEAD /assets/*filepath",
+		"GET /self-host/docker-compose.yml",
+		"HEAD /self-host/docker-compose.yml",
 		"GET /debug/pprof/",
 		"HEAD /debug/pprof/",
 		"GET /debug/pprof/cmdline",

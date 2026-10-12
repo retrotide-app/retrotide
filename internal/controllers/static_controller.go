@@ -18,6 +18,8 @@ import (
 const (
 	shellDocument    = "index.html"
 	shellContentType = "text/html; charset=utf-8"
+	composeType      = "application/yaml"
+	composeFilename  = `attachment; filename="docker-compose.yml"`
 	apiPrefix        = "/api"
 	assetsDir        = "assets"
 	notFoundMessage  = "not found"
@@ -32,7 +34,13 @@ func init() {
 func (s *Service) getAllStaticRoutes() []FRoute {
 	return []FRoute{
 		{Method: http.MethodGet, Path: "/assets/*filepath", Handler: s.serveAsset},
+		{Method: http.MethodGet, Path: "/self-host/docker-compose.yml", Handler: s.serveSelfHostCompose},
 	}
+}
+
+func (s *Service) serveSelfHostCompose(c *gin.Context) {
+	c.Header("Content-Disposition", composeFilename)
+	c.Data(http.StatusOK, composeType, s.SelfHostCompose)
 }
 
 func (s *Service) serveAsset(c *gin.Context) {

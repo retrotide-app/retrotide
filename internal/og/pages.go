@@ -22,6 +22,11 @@ var (
 			description: "A dated, factual comparison of RetroTide and EasyRetro: hidden cards that no RetroTide facilitator can read before the reveal, free action carry-over, and the free plans side by side.",
 		},
 		{
+			path:        "/self-host",
+			title:       "Self-host RetroTide" + siteSuffix,
+			description: "Run RetroTide on your own server with Docker: one compose file, a few settings, and your team's retrospectives stay on your infrastructure.",
+		},
+		{
 			path:        "/templates",
 			title:       "Retrospective templates" + siteSuffix,
 			description: "Free sprint retrospective templates, from Start, Stop, Continue to Sailboat and 4Ls. Pick one and start a board in seconds.",

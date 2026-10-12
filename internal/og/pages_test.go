@@ -19,6 +19,7 @@ func TestIndexablePaths_ListsTheMarketingPagesThenEveryPublicTemplate(t *testing
 		"/",
 		"/pricing",
 		"/compare/easyretro",
+		"/self-host",
 		"/templates",
 		"/legal/privacy",
 		"/legal/terms",

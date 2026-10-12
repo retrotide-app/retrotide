@@ -219,3 +219,21 @@ func TestInit_RegistersTheWebManifestType(t *testing.T) {
 	// then
 	assert.Equal(t, "application/manifest+json", got)
 }
+
+func TestStaticController_SelfHostCompose_DownloadsTheEmbeddedFile(t *testing.T) {
+	// given
+	h := testutil.NewHarness(t)
+	h.UseBaseURL(testutil.TestBaseURL)
+	compose := "name: retrotide\n"
+	s := &Service{Guards: h.Guards, StaticFS: testStaticFS(), SelfHostCompose: []byte(compose)}
+	RegisterRoutes(h.Engine, s.getAllStaticRoutes())
+
+	// when
+	rec := h.NewRequest(http.MethodGet, "/self-host/docker-compose.yml").Record()
+
+	// then
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, compose, rec.Body.String())
+	assert.Equal(t, "application/yaml", rec.Header().Get("Content-Type"))
+	assert.Equal(t, `attachment; filename="docker-compose.yml"`, rec.Header().Get("Content-Disposition"))
+}

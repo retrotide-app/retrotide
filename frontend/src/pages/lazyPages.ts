@@ -8,6 +8,7 @@ export const LandingPage = named(() => import("./landing/LandingPage"), "Landing
 export const NotFoundPage = named(() => import("./notfound/NotFoundPage"), "NotFoundPage");
 export const PricingPage = named(() => import("./pricing/PricingPage"), "PricingPage");
 export const CompareEasyRetroPage = named(() => import("./compare/CompareEasyRetroPage"), "CompareEasyRetroPage");
+export const SelfHostPage = named(() => import("./selfhost/SelfHostPage"), "SelfHostPage");
 export const TemplatesPage = named(() => import("./templates/TemplatesPage"), "TemplatesPage");
 export const TemplatePage = named(() => import("./templates/TemplatePage"), "TemplatePage");
 export const LegalPage = named(() => import("./legal/LegalPage"), "LegalPage");

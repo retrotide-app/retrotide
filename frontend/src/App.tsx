@@ -15,6 +15,7 @@ import {
     LEGAL_ROUTE,
     offersMarketing,
     PRICING_PATH,
+    SELF_HOST_PATH,
     TEMPLATE_ROUTE,
     TEMPLATES_PATH,
 } from "./domain/marketing";
@@ -60,6 +61,7 @@ import {
     RegisterPage,
     ResetPasswordPage,
     SavedTemplatesPage,
+    SelfHostPage,
     SharedBoardPage,
     SharedBoardSummaryPage,
     StaffConsoleLayout,
@@ -204,6 +206,7 @@ function AppRoutes() {
                 <Route element={<MarketingGate />}>
                     <Route path={PRICING_PATH} element={<PricingPage />} />
                     <Route path={COMPARE_EASYRETRO_PATH} element={<CompareEasyRetroPage />} />
+                    <Route path={SELF_HOST_PATH} element={<SelfHostPage />} />
                     <Route path={TEMPLATES_PATH} element={<TemplatesPage />} />
                     <Route path={TEMPLATE_ROUTE} element={<TemplatePage />} />
                     <Route path={LEGAL_ROUTE} element={<LegalPage />} />

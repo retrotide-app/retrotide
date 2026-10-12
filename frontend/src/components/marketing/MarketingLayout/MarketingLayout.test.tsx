@@ -36,7 +36,7 @@ describe("MarketingLayout", () => {
         );
     });
 
-    it("links the templates, pricing and comparison pages from the header", () => {
+    it("links the templates, pricing, comparison and self-hosting pages from the header", () => {
         // given
         const ui = <MarketingLayout />;
 
@@ -45,10 +45,16 @@ describe("MarketingLayout", () => {
 
         // then
         const site = within(screen.getByRole("navigation", { name: "Site" }));
-        expect(site.getAllByRole("link").map(link => link.textContent)).toEqual(["Templates", "Pricing", "Compare"]);
+        expect(site.getAllByRole("link").map(link => link.textContent)).toEqual([
+            "Templates",
+            "Pricing",
+            "Compare",
+            "Self-host",
+        ]);
         expect(site.getByRole("link", { name: "Templates" })).toHaveAttribute("href", "/templates");
         expect(site.getByRole("link", { name: "Pricing" })).toHaveAttribute("href", "/pricing");
         expect(site.getByRole("link", { name: "Compare" })).toHaveAttribute("href", "/compare/easyretro");
+        expect(site.getByRole("link", { name: "Self-host" })).toHaveAttribute("href", "/self-host");
     });
 
     it("offers sign in and sign up from the header", () => {
@@ -81,7 +87,7 @@ describe("MarketingLayout", () => {
         expect(footer.getByRole("link", { name: "Security" })).toHaveAttribute("href", "/legal/security");
     });
 
-    it("links the comparison page from the footer", () => {
+    it("links the comparison and self-hosting pages from the footer", () => {
         // given
         const ui = <MarketingLayout />;
 
@@ -94,6 +100,7 @@ describe("MarketingLayout", () => {
             "href",
             "/compare/easyretro",
         );
+        expect(footer.getByRole("link", { name: "Self-host" })).toHaveAttribute("href", "/self-host");
     });
 
     it("lets the visitor pick a theme from the footer", () => {

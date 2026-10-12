@@ -27,6 +27,9 @@ const (
     <loc>https://retrotide.test/compare/easyretro</loc>
   </url>
   <url>
+    <loc>https://retrotide.test/self-host</loc>
+  </url>
+  <url>
     <loc>https://retrotide.test/templates</loc>
   </url>
   <url>

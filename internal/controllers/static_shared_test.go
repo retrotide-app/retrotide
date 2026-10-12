@@ -115,6 +115,7 @@ func TestStaticController_MarketingPagesCarryTheirOwnMeta(t *testing.T) {
 		{path: "/", title: "RetroTide: sprint retrospectives your team will use", canonical: "https://retrotide.test/"},
 		{path: "/pricing", title: "Pricing | RetroTide", canonical: "https://retrotide.test/pricing"},
 		{path: "/compare/easyretro", title: "RetroTide and EasyRetro compared | RetroTide", canonical: "https://retrotide.test/compare/easyretro"},
+		{path: "/self-host", title: "Self-host RetroTide | RetroTide", canonical: "https://retrotide.test/self-host"},
 		{path: "/templates/sailboat", title: "Sailboat retrospective template | RetroTide", canonical: "https://retrotide.test/templates/sailboat"},
 		{path: "/legal/privacy", title: "Privacy notice | RetroTide", canonical: "https://retrotide.test/legal/privacy"},
 		{path: "/Pricing/?utm_source=slack", title: "Pricing | RetroTide", canonical: "https://retrotide.test/pricing"},

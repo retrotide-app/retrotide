@@ -26,6 +26,7 @@ func TestIsPathSegment(t *testing.T) {
 		{name: "the invitation page an email links to", segment: "accept-invitation", want: true},
 		{name: "the marketing pricing page", segment: "pricing", want: true},
 		{name: "the competitor comparison pages", segment: "compare", want: true},
+		{name: "the self-hosting page and its download", segment: "self-host", want: true},
 		{name: "the template pages", segment: "templates", want: true},
 		{name: "the two-factor sign-in step", segment: "two-factor", want: true},
 		{name: "the legal pages", segment: "legal", want: true},

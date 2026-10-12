@@ -11,6 +11,12 @@ export const PRICING_PATH = "/pricing";
 
 export const COMPARE_EASYRETRO_PATH = "/compare/easyretro";
 
+export const SELF_HOST_PATH = "/self-host";
+
+export const SELF_HOST_COMPOSE_PATH = `${SELF_HOST_PATH}/docker-compose.yml`;
+
+export const SELF_HOST_PORT = 8080;
+
 export const TEMPLATES_PATH = "/templates";
 
 export const TEMPLATE_ROUTE = `${TEMPLATES_PATH}/:key`;

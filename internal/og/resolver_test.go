@@ -32,6 +32,7 @@ func TestResolve_GivesEveryMarketingAndLegalPageItsOwnCopy(t *testing.T) {
 		{path: "/", title: "RetroTide: sprint retrospectives your team will use"},
 		{path: "/pricing", title: "Pricing | RetroTide"},
 		{path: "/compare/easyretro", title: "RetroTide and EasyRetro compared | RetroTide"},
+		{path: "/self-host", title: "Self-host RetroTide | RetroTide"},
 		{path: "/templates", title: "Retrospective templates | RetroTide"},
 		{path: "/legal/privacy", title: "Privacy notice | RetroTide"},
 		{path: "/legal/terms", title: "Terms of service | RetroTide"},

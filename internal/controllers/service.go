@@ -71,6 +71,7 @@ type (
 		Guards               *middleware.Guards
 		WSHandler            http.Handler
 		StaticFS             fs.FS
+		SelfHostCompose      []byte
 		OGResolver           og.Resolver
 		SitemapService       sitemap.Service
 	}
