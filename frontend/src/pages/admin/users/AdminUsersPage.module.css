@@ -1,0 +1,25 @@
+.search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.searchField {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.searchAction {
+    margin-bottom: 1rem;
+}
+
+.statuses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.empty {
+    color: var(--colour-text-muted);
+}

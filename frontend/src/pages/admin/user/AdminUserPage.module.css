@@ -1,0 +1,11 @@
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.note {
+    color: var(--colour-text-muted);
+    line-height: 1.5;
+}

@@ -1,0 +1,106 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--colour-surface);
+    border-right: 1px solid var(--colour-border);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: var(--header-height);
+    padding: 0 1.25rem;
+    border-bottom: 1px solid var(--colour-border);
+    color: var(--colour-text);
+    text-decoration: none;
+}
+
+.brand:hover {
+    color: var(--colour-accent);
+}
+
+.brandMark {
+    flex-shrink: 0;
+}
+
+.brandName {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+}
+
+.nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 0;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    padding: 0.55rem 1.25rem;
+    border-left: 3px solid transparent;
+    color: var(--colour-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+        background 0.15s var(--ease-out),
+        color 0.15s var(--ease-out);
+}
+
+.link:hover {
+    background: var(--colour-accent-soft);
+    color: var(--colour-accent);
+}
+
+.active {
+    background: var(--colour-accent-soft);
+    color: var(--colour-accent);
+    border-left-color: var(--colour-accent);
+}
+
+.overlay {
+    display: none;
+}
+
+@media (max-width: 960px) {
+    .sidebar {
+        z-index: var(--z-drawer);
+        transform: translateX(-100%);
+        visibility: hidden;
+        transition:
+            transform 0.25s var(--ease-out),
+            visibility 0s linear 0.25s;
+    }
+
+    .open {
+        transform: translateX(0);
+        visibility: visible;
+        box-shadow: var(--shadow-lg);
+        transition: transform 0.25s var(--ease-out);
+    }
+
+    .overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-drawer-overlay);
+        padding: 0;
+        border: none;
+        background: var(--colour-overlay);
+        cursor: pointer;
+    }
+}

@@ -1,0 +1,51 @@
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    min-width: 0;
+}
+
+.search {
+    flex: 1 1 14rem;
+    min-width: 0;
+    padding-block: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.toolbar .select {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.votesLeft {
+    flex: 0 0 auto;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: var(--colour-accent-soft);
+    color: var(--colour-text);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.layout {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+}
+
+@media (max-width: 720px) {
+    .search {
+        flex-basis: 100%;
+    }
+
+    .toolbar .select {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .layout {
+        flex-basis: 100%;
+        margin-inline-start: 0;
+    }
+}

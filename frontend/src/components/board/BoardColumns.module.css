@@ -1,0 +1,57 @@
+.board {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.columns {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.focusing {
+    gap: 0.5rem;
+}
+
+.wide {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.wide > * {
+    flex: 1 1 auto;
+}
+
+.strip {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    min-height: 12rem;
+    padding: 0.75rem 0.25rem;
+    border: 1px solid var(--colour-border);
+    border-top: 4px solid var(--board-colour, var(--colour-border-strong));
+    border-radius: var(--radius-lg);
+    background: var(--colour-surface-sunken);
+}
+
+.stripTitle {
+    margin: 0 auto;
+    writing-mode: vertical-rl;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 20rem;
+}
+
+.addColumn {
+    flex: 0 0 14rem;
+    min-width: 11rem;
+    padding: 0.75rem;
+    border: 1px dashed var(--colour-border-strong);
+    border-radius: var(--radius-lg);
+}

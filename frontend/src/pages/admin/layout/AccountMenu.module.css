@@ -1,0 +1,101 @@
+.root {
+    position: relative;
+}
+
+.root .trigger {
+    padding-left: 0.3rem;
+}
+
+.root .avatarOnly {
+    padding-right: 0.3rem;
+}
+
+.avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--colour-on-inverse);
+    background: var(--colour-inverse-bg);
+    border-radius: var(--radius-pill);
+}
+
+.triggerName {
+    max-width: 10rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: var(--z-drawer);
+    display: flex;
+    flex-direction: column;
+    width: 17rem;
+    max-width: calc(100vw - 1.5rem);
+    background: var(--colour-surface);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.who {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--colour-border);
+}
+
+.name {
+    font-weight: 600;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.email {
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--colour-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.row {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--colour-border);
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--colour-border);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+    .root .trigger {
+        padding-right: 0.3rem;
+    }
+
+    .triggerName {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+}

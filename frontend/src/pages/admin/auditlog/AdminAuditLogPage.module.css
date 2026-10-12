@@ -1,0 +1,7 @@
+.filter {
+    max-width: 20rem;
+}
+
+.empty {
+    color: var(--colour-text-muted);
+}

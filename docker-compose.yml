@@ -1,0 +1,97 @@
+name: retrotide-dev
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
+x-postgres: &postgres-base
+  image: postgres:18
+  restart: unless-stopped
+  logging: *default-logging
+  stop_grace_period: 60s
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_DB: postgres
+    RETROTIDE_DB_PASSWORD: retrotide
+    RETROTIDE_MONITOR_PASSWORD: retrotide_monitor
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+    interval: 5s
+    timeout: 5s
+    retries: 10
+    start_period: 10s
+
+services:
+  postgres:
+    <<: *postgres-base
+    container_name: retrotide-postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./deploy/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:5017:5432"
+
+  valkey:
+    image: valkey/valkey:latest
+    container_name: retrotide-valkey
+    restart: unless-stopped
+    logging: *default-logging
+    command: valkey-server --save "" --appendonly no --maxmemory 256mb --maxmemory-policy volatile-lru
+    volumes:
+      - valkey-data:/data
+    ports:
+      - "127.0.0.1:6391:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  postgres-app:
+    <<: *postgres-base
+    profiles: ["app"]
+    container_name: retrotide-postgres-app
+    volumes:
+      - postgres-app-data:/var/lib/postgresql
+      - ./deploy/postgres/initdb:/docker-entrypoint-initdb.d:ro
+
+  app:
+    profiles: ["app"]
+    build: .
+    image: retrotide:local
+    container_name: retrotide-app
+    restart: unless-stopped
+    logging: *default-logging
+    stop_grace_period: 30s
+    depends_on:
+      postgres-app:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:4333:4323"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      LISTEN_ADDR: ":4323"
+      DATABASE_URL: ""
+      POSTGRES_HOST: postgres-app
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: retrotide
+      POSTGRES_PASSWORD: retrotide
+      POSTGRES_DB: retrotide
+      VALKEY_URL: redis://valkey:6379/1
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  postgres-data:
+  postgres-app-data:
+  valkey-data:

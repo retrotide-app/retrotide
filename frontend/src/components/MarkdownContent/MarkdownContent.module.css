@@ -1,0 +1,104 @@
+.content {
+    color: var(--colour-text);
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+.content h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+}
+
+.content h2 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    line-height: 1.3;
+    margin: 2.25rem 0 0.75rem;
+}
+
+.content h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin: 1.75rem 0 0.5rem;
+}
+
+.content p,
+.content ul,
+.content ol,
+.content table,
+.content blockquote {
+    margin: 0 0 1rem;
+}
+
+.content ul,
+.content ol {
+    padding-left: 1.5rem;
+}
+
+.content li + li {
+    margin-top: 0.35rem;
+}
+
+.content a {
+    color: var(--colour-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.content a:hover {
+    color: var(--colour-accent-hover);
+}
+
+.content strong {
+    font-weight: 700;
+}
+
+.content code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.1rem 0.3rem;
+    background: var(--colour-surface-sunken);
+    border-radius: var(--radius-sm);
+}
+
+.content blockquote {
+    padding: 0.75rem 1rem;
+    color: var(--colour-text);
+    background: var(--colour-warning-soft);
+    border-left: 4px solid var(--colour-warning);
+    border-radius: var(--radius-sm);
+}
+
+.content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.content th,
+.content td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+    border: 1px solid var(--colour-border);
+}
+
+.content th {
+    font-weight: 700;
+    background: var(--colour-surface-sunken);
+}
+
+.content hr {
+    margin: 2rem 0;
+    border: none;
+    border-top: 1px solid var(--colour-border);
+}

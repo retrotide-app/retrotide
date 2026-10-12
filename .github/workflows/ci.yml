@@ -1,0 +1,341 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+
+      - name: Check markdown links
+        run: node scripts/check-links.mjs
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Format
+        run: npm run format
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check CSS tokens
+        run: node scripts/check-css-tokens.mjs
+
+      - name: Test
+        run: npm run test:coverage
+
+      - name: Build frontend
+        run: npm run build
+
+  backend-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create static placeholder
+        run: |
+          mkdir -p static
+          echo '<!DOCTYPE html>' > static/index.html
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ hashFiles('go.sum') }}
+          restore-keys: go-${{ runner.os }}-
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Staticcheck
+        run: go tool staticcheck ./...
+
+      - name: Check generated code is up to date
+        run: |
+          set -euo pipefail
+          bash scripts/regen_sqlc.sh
+          bash scripts/regen_mocks.sh
+          git add -A
+          git diff --cached --exit-code
+
+      - name: Build
+        run: go build ./...
+
+  backend-test:
+    name: ${{ matrix.shard == 'rest' && 'backend-test (all other packages)' || format('backend-test (dao {0} of 4)', matrix.shard) }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1", "2", "3", "4", "rest"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create static placeholder
+        run: |
+          mkdir -p static
+          echo '<!DOCTYPE html>' > static/index.html
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ hashFiles('go.sum') }}
+          restore-keys: go-${{ runner.os }}-
+
+      - name: Test this job's share of the DAO package
+        if: matrix.shard != 'rest'
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          tests=$(go test -list '^Test' ./internal/dao | grep '^Test' | sort | awk -v shards=4 -v shard="$SHARD" 'NR % shards == shard - 1' | paste -sd '|')
+          pattern="^(${tests})\$"
+          go test ./internal/dao -count=1 -run "$pattern"
+
+      - name: Test everything except the DAO package
+        if: matrix.shard == 'rest'
+        run: |
+          set -euo pipefail
+          listed="$(go list ./... | grep -v '/internal/dao$')"
+          readarray -t packages <<<"${listed}"
+          go test "${packages[@]}" -count=1
+
+  migration-compat:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    env:
+      LISTEN_ADDR: 127.0.0.1:4323
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: retrotide
+      POSTGRES_PASSWORD: retrotide
+      POSTGRES_DB: retrotide
+      POSTGRES_SSL_MODE: disable
+      VALKEY_URL: redis://127.0.0.1:6379
+      HEALTH_URL: http://127.0.0.1:4323/health
+      IMAGE_REPOSITORY: retrotide-app/retrotide
+      PREVIOUS_IMAGE: ghcr.io/retrotide-app/retrotide:production
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -p 5432 -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      valkey:
+        image: valkey/valkey:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Create static placeholder
+        run: |
+          mkdir -p static
+          echo '<!DOCTYPE html>' > static/index.html
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: go-${{ runner.os }}-${{ hashFiles('go.sum') }}
+          restore-keys: go-${{ runner.os }}-
+
+      - name: Create the database roles
+        env:
+          POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          docker exec --interactive \
+            --env RETROTIDE_DB_PASSWORD="${POSTGRES_PASSWORD}" \
+            --env RETROTIDE_MONITOR_PASSWORD=retrotide_monitor \
+            "${POSTGRES_CONTAINER}" \
+            psql --set ON_ERROR_STOP=1 --username postgres --dbname postgres \
+            < deploy/postgres/initdb/10-roles.sql
+
+      - name: Build the new release
+        run: go build -o "${RUNNER_TEMP}/retrotide" .
+
+      - name: Migrate a fresh database with the new release
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/new-release.log"
+          "${RUNNER_TEMP}/retrotide" > "${log}" 2>&1 &
+          pid=$!
+          healthy=false
+          for _ in $(seq 1 60); do
+            if curl --fail --silent --output /dev/null --max-time 5 "${HEALTH_URL}"; then
+              healthy=true
+              break
+            fi
+            if ! kill -0 "${pid}"; then
+              break
+            fi
+            sleep 2
+          done
+          if [ "${healthy}" != "true" ]; then
+            echo "::error::The new release never reported healthy on ${HEALTH_URL}"
+            cat "${log}"
+            exit 1
+          fi
+          kill -TERM "${pid}"
+          if ! wait "${pid}"; then
+            echo "::error::The new release did not shut down cleanly"
+            cat "${log}"
+            exit 1
+          fi
+          echo "The new release migrated a fresh database and reported healthy."
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Look up the previous release
+        id: previous
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! token_response="$(curl --fail --silent --show-error --user "${GITHUB_ACTOR}:${GITHUB_TOKEN}" "https://ghcr.io/token?service=ghcr.io&scope=repository:${IMAGE_REPOSITORY}:pull")"; then
+            echo "::error::ghcr.io refused a pull token for ${IMAGE_REPOSITORY}"
+            exit 1
+          fi
+          if ! registry_token="$(jq --exit-status --raw-output '.token' <<<"${token_response}")"; then
+            echo "::error::The ghcr.io token response carried no token"
+            exit 1
+          fi
+          body="${RUNNER_TEMP}/previous-manifest.json"
+          if ! status="$(curl --silent --show-error --output "${body}" --write-out '%{http_code}' \
+            --header "Authorization: Bearer ${registry_token}" \
+            --header "Accept: application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.docker.distribution.manifest.v2+json" \
+            "https://ghcr.io/v2/${IMAGE_REPOSITORY}/manifests/production")"; then
+            echo "::error::Could not reach ghcr.io to look up ${PREVIOUS_IMAGE}"
+            exit 1
+          fi
+          if [ "${status}" = "200" ]; then
+            echo "Found ${PREVIOUS_IMAGE}."
+            echo "exists=true" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          if [ "${status}" = "404" ] && jq --exit-status '.errors[]? | select(.code == "MANIFEST_UNKNOWN" or .code == "NAME_UNKNOWN")' "${body}" > /dev/null; then
+            echo "::notice::There is no production release yet: ghcr.io does not know ${PREVIOUS_IMAGE}, so there is no previous release to boot against the new schema."
+            echo "exists=false" >> "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          echo "::error::ghcr.io answered HTTP ${status} when looking up ${PREVIOUS_IMAGE}"
+          cat "${body}"
+          exit 1
+
+      - name: Boot the previous release against the new schema
+        if: steps.previous.outputs.exists == 'true'
+        run: |
+          set -euo pipefail
+          docker pull "${PREVIOUS_IMAGE}"
+          docker run --detach --name previous-release --network host \
+            --env LISTEN_ADDR \
+            --env POSTGRES_HOST \
+            --env POSTGRES_PORT \
+            --env POSTGRES_USER \
+            --env POSTGRES_PASSWORD \
+            --env POSTGRES_DB \
+            --env POSTGRES_SSL_MODE \
+            --env VALKEY_URL \
+            "${PREVIOUS_IMAGE}"
+          healthy=false
+          for _ in $(seq 1 60); do
+            if curl --fail --silent --output /dev/null --max-time 5 "${HEALTH_URL}"; then
+              healthy=true
+              break
+            fi
+            running="$(docker inspect --format '{{.State.Running}}' previous-release)"
+            if [ "${running}" != "true" ]; then
+              break
+            fi
+            sleep 2
+          done
+          if [ "${healthy}" != "true" ]; then
+            echo "::error::The previous release (${PREVIOUS_IMAGE}) never reported healthy against the schema the new release migrated"
+            docker logs previous-release
+            exit 1
+          fi
+          echo "The previous release boots and reports healthy against the new schema."
+
+  backend:
+    if: ${{ always() }}
+    needs: [backend-lint, backend-test, migration-compat]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every backend job to pass
+        env:
+          LINT: ${{ needs.backend-lint.result }}
+          TESTS: ${{ needs.backend-test.result }}
+          COMPAT: ${{ needs.migration-compat.result }}
+        run: |
+          set -euo pipefail
+          echo "lint: ${LINT}, tests: ${TESTS}, migration-compat: ${COMPAT}"
+          if [ "${LINT}" != "success" ] || [ "${TESTS}" != "success" ] || [ "${COMPAT}" != "success" ]; then
+            echo "::error::backend-lint, backend-test and migration-compat must all succeed"
+            exit 1
+          fi

@@ -1,0 +1,27 @@
+.prompt {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0.5rem 0;
+    padding: 0.75rem 1rem;
+    background: var(--colour-info-soft);
+    border: 1px solid var(--colour-info);
+    border-radius: var(--radius-sm);
+    color: var(--colour-text);
+}
+
+.prompt:focus-visible {
+    outline: 2px solid var(--colour-focus);
+    outline-offset: 2px;
+}
+
+.allowance {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.note {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--colour-text-muted);
+}

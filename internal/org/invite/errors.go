@@ -1,0 +1,30 @@
+package invite
+
+import "errors"
+
+var (
+	ErrInvalidInvite          = errors.New("the invite link is invalid, used, revoked or has expired")
+	ErrInviteNotFound         = errors.New("invite not found")
+	ErrOrganisationNotFound   = errors.New("organisation not found")
+	ErrInvalidRole            = errors.New("an invite's role is admin or member")
+	ErrAdminInviteForbidden   = errors.New("inviting an admin needs the permission to make admins")
+	ErrAdminRevokeForbidden   = errors.New("revoking an admin invite needs the permission to make admins")
+	ErrInvalidEmail           = errors.New("a valid email address is required")
+	ErrInvalidMaxUses         = errors.New("an invite link works at least once, and an email invite exactly once")
+	ErrTeamNotFound           = errors.New("team not found")
+	ErrTeamArchived           = errors.New("that team is archived")
+	ErrEmailUnavailable       = errors.New("email is not available on this site")
+	ErrAlreadyMember          = errors.New("already a member of this organisation")
+	ErrInvitePending          = errors.New("that email address already has a pending invite")
+	ErrNotResendable          = errors.New("only an invite sent to an email address can be resent")
+	ErrEmailMismatch          = errors.New("this invite is for a different email address")
+	ErrEmailUnverified        = errors.New("verify your email address before accepting this invite")
+	ErrEmailTaken             = errors.New("that email address already has an account, so sign in to accept the invite")
+	ErrPasswordSignInDisabled = errors.New("password sign-in is turned off on this site")
+	ErrInviteNotSent          = errors.New("the invite was saved, but its email was not sent, so resend it")
+	ErrInviteNotReissued      = errors.New("the earlier invite was revoked, but its replacement could not be created, so invite the address again")
+	ErrVerificationNotSent    = errors.New("the account was created, but its verification email was not sent")
+	ErrCacheNotCleared        = errors.New("joined, but a cached membership could not be cleared")
+	ErrAccountLeftBehind      = errors.New("the account was created, but it could not join the organisation or be removed again")
+	ErrNotAudited             = errors.New("the change was made, but its audit entry was not recorded")
+)

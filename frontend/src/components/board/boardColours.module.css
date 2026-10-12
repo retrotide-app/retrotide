@@ -1,0 +1,31 @@
+.green {
+    --board-colour: var(--board-colour-green);
+}
+
+.red {
+    --board-colour: var(--board-colour-red);
+}
+
+.blue {
+    --board-colour: var(--board-colour-blue);
+}
+
+.amber {
+    --board-colour: var(--board-colour-amber);
+}
+
+.purple {
+    --board-colour: var(--board-colour-purple);
+}
+
+.teal {
+    --board-colour: var(--board-colour-teal);
+}
+
+.pink {
+    --board-colour: var(--board-colour-pink);
+}
+
+.grey {
+    --board-colour: var(--board-colour-grey);
+}

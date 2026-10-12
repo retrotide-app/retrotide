@@ -1,0 +1,34 @@
+.tag {
+    display: inline-block;
+    padding: 0.1rem 0.55rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+}
+
+.neutral {
+    color: var(--colour-text-muted);
+    background: var(--colour-surface-sunken);
+    border-color: var(--colour-border);
+}
+
+.success {
+    color: var(--colour-text);
+    background: var(--colour-success-soft);
+    border-color: var(--colour-success);
+}
+
+.warning {
+    color: var(--colour-text);
+    background: var(--colour-warning-soft);
+    border-color: var(--colour-warning);
+}
+
+.danger {
+    color: var(--colour-danger);
+    background: var(--colour-danger-soft);
+    border-color: var(--colour-danger);
+}

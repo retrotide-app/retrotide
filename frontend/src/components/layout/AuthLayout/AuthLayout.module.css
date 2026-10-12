@@ -1,0 +1,57 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    min-height: 100vh;
+    padding: calc(2rem + env(safe-area-inset-top, 0px)) 1.25rem calc(2rem + env(safe-area-inset-bottom, 0px));
+    color: var(--colour-text);
+    background: var(--colour-bg);
+}
+
+.page:focus {
+    outline: none;
+}
+
+.card {
+    width: 100%;
+    max-width: 26rem;
+    padding: 2rem 1.75rem;
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+    background: var(--colour-surface);
+    box-shadow: var(--shadow-md);
+}
+
+.brand {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+}
+
+.logo {
+    width: 9rem;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.footer {
+    width: 100%;
+    max-width: 26rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--colour-text-muted);
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 1.5rem 1.25rem;
+    }
+}

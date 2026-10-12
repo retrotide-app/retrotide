@@ -1,0 +1,101 @@
+.banner {
+    background: var(--banner-tone);
+    color: var(--banner-on-tone);
+    padding: 0.6rem 1rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+}
+
+.danger {
+    --banner-tone: var(--colour-danger);
+    --banner-on-tone: var(--colour-on-danger);
+}
+
+.warning {
+    --banner-tone: var(--colour-warning);
+    --banner-on-tone: var(--colour-on-warning);
+}
+
+.info {
+    --banner-tone: var(--colour-info);
+    --banner-on-tone: var(--colour-on-info);
+}
+
+.success {
+    --banner-tone: var(--colour-success);
+    --banner-on-tone: var(--colour-on-success);
+}
+
+.text {
+    overflow-wrap: anywhere;
+}
+
+.text a,
+.text a:hover {
+    color: inherit;
+}
+
+.text a {
+    font-weight: 800;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.text a:hover {
+    opacity: 0.75;
+}
+
+.button,
+.button:hover {
+    color: var(--banner-tone);
+}
+
+.button {
+    background: var(--banner-on-tone);
+    border: none;
+    padding: 0.3rem 0.9rem;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: opacity 0.15s var(--ease-out);
+}
+
+.button:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.dismiss {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0 0.25rem;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: opacity 0.15s var(--ease-out);
+}
+
+.dismiss:hover {
+    opacity: 0.7;
+}
+
+.note {
+    font-weight: 500;
+    font-size: 0.9rem;
+    opacity: 0.95;
+}

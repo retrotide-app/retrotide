@@ -1,0 +1,132 @@
+all: false
+dir: "{{.InterfaceDir}}"
+filename: "{{ .InterfaceName | snakecase }}_mock.go"
+force-file-write: true
+formatter: goimports
+include-auto-generated: false
+log-level: info
+structname: "{{.Mock}}{{.InterfaceName}}"
+pkgname: "{{.SrcPackageName}}"
+recursive: false
+require-template-schema-exists: true
+template: testify
+template-schema: "{{.Template}}.schema.json"
+packages:
+  retrotide/internal/settings:
+    interfaces:
+      Service:
+      Listener:
+      BatchListener:
+  retrotide/internal/health:
+    interfaces:
+      Service:
+      Pinger:
+  retrotide/internal/cache/engine:
+    interfaces:
+      Engine:
+  retrotide/internal/repository:
+    config:
+      all: true
+  retrotide/internal/dao:
+    config:
+      all: true
+  retrotide/internal/session:
+    config:
+      all: true
+  retrotide/internal/guest:
+    config:
+      all: true
+  retrotide/internal/auth:
+    config:
+      all: true
+  retrotide/internal/user:
+    config:
+      all: true
+  retrotide/internal/email:
+    config:
+      all: true
+  retrotide/internal/notification:
+    config:
+      all: true
+  retrotide/internal/dronebl:
+    config:
+      all: true
+  retrotide/internal/authz:
+    config:
+      all: true
+  retrotide/internal/audit:
+    config:
+      all: true
+  retrotide/internal/admin:
+    config:
+      all: true
+  retrotide/internal/siteinfo:
+    config:
+      all: true
+  retrotide/internal/identity:
+    config:
+      all: true
+  retrotide/internal/identity/google:
+    config:
+      all: true
+  retrotide/internal/twofactor:
+    config:
+      all: true
+  retrotide/internal/hierarchy:
+    config:
+      all: true
+  retrotide/internal/orgauthz:
+    config:
+      all: true
+  retrotide/internal/entitlements:
+    config:
+      all: true
+  retrotide/internal/org:
+    config:
+      all: true
+  retrotide/internal/org/invite:
+    config:
+      all: true
+  retrotide/internal/team:
+    config:
+      all: true
+  retrotide/internal/board:
+    config:
+      all: true
+  retrotide/internal/board/live:
+    config:
+      all: true
+  retrotide/internal/board/actionitems:
+    config:
+      all: true
+  retrotide/internal/board/cardpolish:
+    interfaces:
+      Service:
+  retrotide/internal/board/images:
+    interfaces:
+      Service:
+  retrotide/internal/board/management:
+    interfaces:
+      Service:
+  retrotide/internal/board/surveys:
+    interfaces:
+      Service:
+  retrotide/internal/media:
+    interfaces:
+      Service:
+      Encoder:
+  retrotide/internal/savedtemplate:
+    config:
+      all: true
+  retrotide/internal/actionitem:
+    config:
+      all: true
+  retrotide/internal/export:
+    config:
+      all: true
+  retrotide/internal/ws:
+    config:
+      all: true
+  retrotide/internal/og:
+    config:
+      all: true

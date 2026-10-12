@@ -1,0 +1,38 @@
+.input {
+    background: var(--colour-surface-sunken);
+    border: 1px solid var(--colour-border);
+    color: var(--colour-text);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: var(--font-body);
+    transition:
+        border-color 0.2s var(--ease-out),
+        box-shadow 0.2s var(--ease-out);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--colour-accent);
+    box-shadow: 0 0 0 1px var(--colour-accent);
+}
+
+.input::placeholder {
+    color: var(--colour-text-muted);
+    opacity: 1;
+}
+
+.input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.input[readonly] {
+    color: var(--colour-text-muted);
+    cursor: default;
+}
+
+.fullWidth {
+    width: 100%;
+    max-width: 100%;
+}

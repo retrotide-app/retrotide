@@ -1,0 +1,11 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.header {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--colour-border);
+}

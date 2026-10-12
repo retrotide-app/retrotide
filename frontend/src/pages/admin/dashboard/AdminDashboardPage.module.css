@@ -1,0 +1,144 @@
+.asOf {
+    margin-top: -0.5rem;
+    font-size: 0.85rem;
+    color: var(--colour-text-muted);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--colour-text);
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+    gap: 0.75rem;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0.9rem 1rem 1rem;
+    background: var(--colour-surface);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+}
+
+.tileLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--colour-text-muted);
+}
+
+.tileValue {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.tileChange {
+    font-size: 0.8rem;
+    color: var(--colour-text-muted);
+}
+
+.charts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.chartWide {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.split {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 0.75rem;
+}
+
+.split .number {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+}
+
+.health {
+    display: flex;
+    flex-direction: column;
+}
+
+.healthRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.55rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--colour-border);
+}
+
+.healthRow:first-child {
+    padding-top: 0;
+}
+
+.healthRow:last-child {
+    border-bottom: none;
+}
+
+.muted {
+    color: var(--colour-text-muted);
+}
+
+.noStats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    list-style: none;
+}
+
+@media (max-width: 960px) {
+    .split {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 720px) {
+    .charts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .tiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    .tile {
+        padding: 0.75rem;
+    }
+
+    .tileValue {
+        font-size: 1.4rem;
+    }
+}

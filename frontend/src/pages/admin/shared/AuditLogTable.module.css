@@ -1,0 +1,32 @@
+.when {
+    white-space: nowrap;
+}
+
+.muted {
+    color: var(--colour-text-muted);
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.detail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.detailLabel {
+    font-weight: 600;
+    color: var(--colour-text-muted);
+}
+
+.detailLabel::after {
+    content: ":";
+}
+
+.detailValue {
+    overflow-wrap: anywhere;
+}

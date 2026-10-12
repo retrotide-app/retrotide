@@ -1,0 +1,7 @@
+package sitemap
+
+import "errors"
+
+var (
+	errDatabaseDown = errors.New("database down")
+)

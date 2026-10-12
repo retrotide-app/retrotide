@@ -1,0 +1,30 @@
+.page {
+    max-width: var(--page-max-width);
+    margin: 4rem auto;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    color: var(--colour-text);
+}
+
+.code {
+    font-family: var(--font-display);
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--colour-accent);
+    letter-spacing: 0.1em;
+    line-height: 1;
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--colour-text);
+    margin: 1.25rem 0 0.5rem;
+}
+
+.blurb {
+    color: var(--colour-text-muted);
+    margin: 0 auto 2rem;
+    max-width: 32rem;
+    line-height: 1.5;
+}

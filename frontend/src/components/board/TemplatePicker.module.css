@@ -1,0 +1,125 @@
+.picker {
+    min-width: 0;
+    border: none;
+}
+
+.error {
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--colour-danger);
+}
+
+.groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.groupLabel {
+    font-weight: 700;
+    color: var(--colour-text);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.option {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.875rem;
+    border: 2px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+    background: var(--colour-surface);
+    cursor: pointer;
+    overflow-wrap: anywhere;
+    transition:
+        border-color 0.15s var(--ease-out),
+        background 0.15s var(--ease-out);
+}
+
+.option:hover {
+    border-color: var(--colour-border-strong);
+}
+
+.option:has(.radio:checked) {
+    border-color: var(--colour-accent);
+    background: var(--colour-accent-soft);
+}
+
+.option:has(.radio:focus-visible) {
+    outline: 3px solid var(--colour-focus);
+    outline-offset: 2px;
+}
+
+.radio {
+    position: absolute;
+    top: 0.875rem;
+    right: 0.875rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    accent-color: var(--colour-accent);
+}
+
+.name {
+    padding-right: 1.75rem;
+    font-weight: 700;
+    color: var(--colour-text);
+}
+
+.description {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--colour-text-muted);
+}
+
+.board {
+    display: flex;
+    gap: 0.375rem;
+    min-width: 0;
+    margin-top: auto;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    background: var(--colour-surface-sunken);
+}
+
+.column {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.bar {
+    height: 2.25rem;
+    border-top: 4px solid var(--board-colour);
+    border-radius: var(--radius-sm);
+    background: var(--colour-surface);
+}
+
+.columnTitle {
+    overflow: hidden;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--colour-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

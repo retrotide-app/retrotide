@@ -1,0 +1,30 @@
+.link {
+    text-decoration: none;
+    transition: color 0.15s var(--ease-out);
+}
+
+.default {
+    color: var(--colour-accent);
+}
+
+.default:hover {
+    color: var(--colour-accent-hover);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.muted {
+    color: var(--colour-text-muted);
+}
+
+.muted:hover {
+    color: var(--colour-accent);
+}
+
+.inverse {
+    color: var(--colour-on-inverse-muted);
+}
+
+.inverse:hover {
+    color: var(--colour-on-inverse);
+}

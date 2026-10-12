@@ -1,0 +1,70 @@
+import { renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it } from "vitest";
+import { providerWrapper } from "../test-utils/render";
+import { usePageTitle } from "./usePageTitle";
+
+function isolated(title: string): string {
+    return `${String.fromCharCode(0x2068)}${title}${String.fromCharCode(0x2069)}`;
+}
+
+beforeEach(() => {
+    document.title = "";
+});
+
+describe("usePageTitle", () => {
+    it("appends the site name to the isolated title", () => {
+        // given
+        const wrapper = providerWrapper({ siteInfo: { site_name: "Harbour" } });
+
+        // when
+        renderHook(() => usePageTitle("Boards"), { wrapper });
+
+        // then
+        expect(document.title).toBe(`${isolated("Boards")} | Harbour`);
+    });
+
+    it("shows the site name on its own when no title is given", () => {
+        // given
+        const wrapper = providerWrapper({ siteInfo: { site_name: "Harbour" } });
+
+        // when
+        renderHook(() => usePageTitle(), { wrapper });
+
+        // then
+        expect(document.title).toBe("Harbour");
+    });
+
+    it("treats an empty title as no title at all", () => {
+        // given
+        const wrapper = providerWrapper({ siteInfo: { site_name: "Harbour" } });
+
+        // when
+        renderHook(() => usePageTitle(""), { wrapper });
+
+        // then
+        expect(document.title).toBe("Harbour");
+    });
+
+    it("retitles the document when the page title changes", () => {
+        // given
+        const wrapper = providerWrapper({ siteInfo: { site_name: "Harbour" } });
+        const { rerender } = renderHook(usePageTitle, { wrapper, initialProps: "Boards" });
+
+        // when
+        rerender("Settings");
+
+        // then
+        expect(document.title).toBe(`${isolated("Settings")} | Harbour`);
+    });
+
+    it("uses the site name the provider supplies", () => {
+        // given
+        const wrapper = providerWrapper();
+
+        // when
+        renderHook(() => usePageTitle("Boards"), { wrapper });
+
+        // then
+        expect(document.title).toBe(`${isolated("Boards")} | RetroTide`);
+    });
+});

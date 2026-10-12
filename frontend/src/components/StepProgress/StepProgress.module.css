@@ -1,0 +1,76 @@
+.steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    list-style: none;
+    min-width: 0;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    color: var(--colour-text-muted);
+    font-size: 0.9rem;
+}
+
+.number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 2px solid var(--colour-border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--colour-surface);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.name {
+    overflow-wrap: anywhere;
+}
+
+.done .number {
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+}
+
+.current {
+    color: var(--colour-text);
+    font-weight: 600;
+}
+
+.current .number {
+    border-color: var(--colour-accent);
+    background: var(--colour-accent);
+    color: var(--colour-on-accent);
+}
+
+.compact {
+    gap: 0.4rem 1rem;
+}
+
+.compact .number {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 720px) {
+    .compact {
+        display: grid;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-auto-flow: column;
+        gap: 0.25rem;
+    }
+
+    .compact .step {
+        flex-direction: column;
+        gap: 0.2rem;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+}

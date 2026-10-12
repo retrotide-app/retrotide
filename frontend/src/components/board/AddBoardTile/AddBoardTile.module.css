@@ -1,0 +1,49 @@
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 8rem;
+    min-width: 0;
+    padding: 1rem;
+    color: var(--colour-text-muted);
+    text-decoration: none;
+    background: transparent;
+    border: 2px dashed var(--colour-border-strong);
+    border-radius: var(--radius-md);
+    transition:
+        color 0.15s var(--ease-out),
+        border-color 0.15s var(--ease-out),
+        background 0.15s var(--ease-out);
+}
+
+.tile:hover {
+    color: var(--colour-accent);
+    border-color: var(--colour-accent);
+    background: var(--colour-accent-soft);
+}
+
+.tile:focus-visible {
+    outline: 2px solid var(--colour-focus);
+    outline-offset: 2px;
+}
+
+.plus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--colour-on-accent);
+    background: var(--colour-accent);
+    border-radius: var(--radius-pill);
+}
+
+.label {
+    font-weight: 600;
+    text-align: center;
+    overflow-wrap: anywhere;
+}

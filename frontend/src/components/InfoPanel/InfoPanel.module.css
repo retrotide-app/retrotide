@@ -1,0 +1,30 @@
+.panel {
+    background: var(--colour-accent-soft);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: var(--colour-text-muted);
+    line-height: 1.6;
+}
+
+.panel p {
+    margin-bottom: 0.5rem;
+}
+
+.panel p:last-child {
+    margin-bottom: 0;
+}
+
+.panel strong {
+    color: var(--colour-text);
+}
+
+.title {
+    font-family: var(--font-display);
+    color: var(--colour-text);
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.03em;
+}

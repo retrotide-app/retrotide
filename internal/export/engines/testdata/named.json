@@ -1,0 +1,91 @@
+{
+  "id": "8f0c1a2b-3c4d-4e5f-8a6b-7c8d9e0f1a2b",
+  "title": "Sprint 42",
+  "context": "Payments squad",
+  "template_key": "went-well",
+  "anonymity": "named",
+  "stage": "discuss",
+  "cards_hidden": false,
+  "closed": false,
+  "created_at": "2026-09-22T09:00:00.000Z",
+  "columns": [
+    {
+      "title": "Went well",
+      "description": "What helped",
+      "cards": [
+        {
+          "body": "Deploys were smooth, mostly",
+          "author": "Sam",
+          "votes": 3,
+          "hidden": false,
+          "created_at": "2026-09-22T10:01:02.512Z",
+          "updated_at": "2026-09-22T10:03:00.250Z",
+          "comments": [
+            {
+              "body": "Agreed, the new pipeline helped",
+              "author": "Ali",
+              "created_at": "2026-09-22T10:04:00.000Z"
+            }
+          ],
+          "action_items": [
+            {
+              "title": "Thank @Hana for the pipeline",
+              "assignee": "Hana",
+              "due_on": "2026-10-20",
+              "status": "open"
+            }
+          ],
+          "merged_cards": [
+            {
+              "body": "CI was fast\nand green",
+              "author": "Ali",
+              "votes": 1,
+              "hidden": false,
+              "created_at": "2026-09-22T10:02:40.118Z",
+              "comments": [],
+              "action_items": [],
+              "merged_cards": []
+            }
+          ]
+        }
+      ],
+      "hidden_count": 0
+    },
+    {
+      "title": "To improve",
+      "description": "",
+      "cards": [
+        {
+          "body": "=HYPERLINK(\"http://evil.example\")",
+          "author": "Gil",
+          "votes": 0,
+          "hidden": false,
+          "created_at": "2026-09-22T10:06:00.000Z",
+          "comments": [
+            {
+              "body": "-1 from me",
+              "author": "Sam",
+              "created_at": "2026-09-22T10:07:00.000Z"
+            }
+          ],
+          "action_items": [
+            {
+              "title": "Escape <b>formulas</b> & *markdown*",
+              "due_on": null,
+              "status": "done"
+            }
+          ],
+          "merged_cards": []
+        }
+      ],
+      "hidden_count": 0
+    }
+  ],
+  "other_actions": [
+    {
+      "title": "Book the next retro",
+      "due_on": null,
+      "status": "open"
+    }
+  ]
+}

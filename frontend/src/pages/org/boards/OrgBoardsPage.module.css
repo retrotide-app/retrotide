@@ -1,0 +1,125 @@
+.counts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    background: var(--colour-surface);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+}
+
+.filter {
+    flex: 1 1 16rem;
+    max-width: 24rem;
+    min-width: 0;
+    padding-block: 0.45rem;
+    font-size: 0.95rem;
+}
+
+.toolbar .sort {
+    flex: 0 0 auto;
+    width: auto;
+    margin-inline-start: auto;
+}
+
+.toolbar .choice {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+.pinnedSwitch {
+    flex: 0 0 auto;
+}
+
+.bulkCount {
+    margin-inline-end: auto;
+    font-weight: 600;
+    color: var(--colour-text);
+}
+
+.failures {
+    flex-basis: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.failureList {
+    margin: 0.25rem 0 0;
+    padding-inline-start: 1.25rem;
+}
+
+.emptyActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.sectionHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+}
+
+.sectionTitle {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    line-height: 1.3;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.hint {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--colour-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.endedTitle {
+    margin: 0.75rem 0 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--colour-text-muted);
+}
+
+.firstBoard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.firstTile {
+    display: grid;
+    min-height: 14rem;
+}
+
+@media (max-width: 480px) {
+    .filter {
+        flex-basis: 100%;
+        max-width: none;
+    }
+
+    .toolbar .sort {
+        margin-inline-start: 0;
+    }
+}

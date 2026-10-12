@@ -1,0 +1,18 @@
+.reactions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex-basis: 100%;
+    min-width: 0;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.chips > button {
+    gap: 0.25rem;
+}

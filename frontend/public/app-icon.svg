@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="101 -224 1268 1268">
+    <rect x="101" y="-224" width="1268" height="1268" fill="#f5f9ff"/>
+    <defs>
+        <linearGradient id="crest" x1="425" y1="125" x2="1018" y2="397" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#22b8fb"/>
+            <stop offset="0.48" stop-color="#79ddf8"/>
+            <stop offset="1" stop-color="#dafaff"/>
+        </linearGradient>
+        <linearGradient id="outerWave" x1="411" y1="258" x2="773" y2="736" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#169cf1"/>
+            <stop offset="0.5" stop-color="#1466ed"/>
+            <stop offset="1" stop-color="#003cce"/>
+        </linearGradient>
+        <linearGradient id="innerWave" x1="520" y1="269" x2="880" y2="665" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0e58dc"/>
+            <stop offset="0.55" stop-color="#063acb"/>
+            <stop offset="1" stop-color="#001ea2"/>
+        </linearGradient>
+        <linearGradient id="frontWave" x1="516" y1="507" x2="1049" y2="707" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#2379f5"/>
+            <stop offset="0.5" stop-color="#0858ec"/>
+            <stop offset="1" stop-color="#0135ca"/>
+        </linearGradient>
+        <linearGradient id="frontWaveDark" x1="545" y1="564" x2="1054" y2="716" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0a48db"/>
+            <stop offset="0.55" stop-color="#043ccf"/>
+            <stop offset="1" stop-color="#0029ab"/>
+        </linearGradient>
+        <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f8fcff"/>
+            <stop offset="0.55" stop-color="#edf5ff"/>
+            <stop offset="1" stop-color="#d8e9ff"/>
+        </linearGradient>
+        <linearGradient id="yellowNote" x1="690" y1="323" x2="776" y2="414" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ffd238"/>
+            <stop offset="1" stop-color="#ffbc0b"/>
+        </linearGradient>
+        <linearGradient id="orangeNote" x1="691" y1="421" x2="781" y2="511" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ffb623"/>
+            <stop offset="1" stop-color="#f89406"/>
+        </linearGradient>
+        <linearGradient id="greenNote" x1="825" y1="388" x2="919" y2="496" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#43d5aa"/>
+            <stop offset="1" stop-color="#33c78d"/>
+        </linearGradient>
+        <linearGradient id="purpleNote" x1="970" y1="379" x2="1064" y2="469" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#a576fa"/>
+            <stop offset="1" stop-color="#7954e7"/>
+        </linearGradient>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#003170" flood-opacity="0.18"/>
+        </filter>
+        <filter id="tinyShadow" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#002657" flood-opacity="0.22"/>
+        </filter>
+    </defs>
+
+    <path d="M962 272c-26-70-107-90-186-69-111 30-180 113-184 194-5 98 63 162 150 187 89 25 192 6 284-43-42 93-127 167-236 198-145 42-293 4-368-101-83-115-66-284 26-408C536 112 649 57 769 68c126 11 229 77 274 142 29 42 28 85 4 110-26 27-67 25-85-48z" fill="url(#innerWave)"/>
+    <path d="M515 628c-75-107-70-266 9-379C599 141 716 99 829 126c-101-63-231-72-337 1-112 77-152 191-114 330 22 83 67 145 137 171z" fill="url(#outerWave)"/>
+    <path d="M384 418C394 246 526 99 695 70c115-20 238 13 313 80 54 48 72 105 38 145-24 29-63 31-82-5-23-43-21-63-67-82-93-39-204-26-300 41-102 71-153 185-125 302 18 77 64 143 129 181-132-26-226-141-217-314z" fill="url(#crest)"/>
+
+    <g filter="url(#softShadow)">
+        <path d="M674 271l96 24c15 4 24 16 24 31v252c-48-2-92-17-136-44V292c0-15 7-24 16-21z" fill="url(#panel)" stroke="#0b3c71" stroke-width="1.6"/>
+        <path d="M828 340l87 21c15 4 24 15 24 30v156c-42 20-87 31-134 32V362c0-15 10-25 23-22z" fill="url(#panel)" stroke="#0b3c71" stroke-width="1.6"/>
+        <path d="M973 337l84 22c17 4 27 18 27 34v125c-41 2-89 15-133 28V358c0-15 9-24 22-21z" fill="url(#panel)" stroke="#0b3c71" stroke-width="1.6"/>
+    </g>
+
+    <g filter="url(#tinyShadow)">
+        <path d="M694 318l65 13c8 2 12 7 12 14v42l-27 25-52-11c-7-2-11-7-11-14v-57c0-9 5-14 13-12z" fill="url(#yellowNote)"/>
+        <path d="M744 412v-18c0-5 3-8 8-7l19 4z" fill="#e9a400"/>
+        <path d="M694 418l67 13c8 2 13 8 13 15v42l-26 24-55-12c-8-1-12-7-12-14v-56c0-9 5-14 13-12z" fill="url(#orangeNote)"/>
+        <path d="M748 512v-19c0-5 3-8 8-7l18 4z" fill="#e17d00"/>
+        <path d="M836 385l69 14c9 2 14 8 14 16v52l-29 28-54-11c-8-2-12-8-12-16v-70c0-9 5-15 12-13z" fill="url(#greenNote)"/>
+        <path d="M890 495v-20c0-6 4-9 9-8l20 4z" fill="#19a875"/>
+        <path d="M982 378l67 14c8 2 13 8 13 16v36l-29 26-50-11c-8-2-13-8-13-16v-52c0-9 5-15 12-13z" fill="url(#purpleNote)"/>
+        <path d="M1033 470v-20c0-6 4-9 9-8l20 4z" fill="#6640d0"/>
+    </g>
+
+    <path d="M515 586c13-70 66-104 116-78 25 13 45 36 67 49 99 62 201 52 291-17 45-35 86-42 117-9-65 17-93 84-157 130-111 80-283 100-390 27-34-23-50-62-44-102z" fill="url(#frontWave)"/>
+    <path d="M515 586c25-34 58-31 91-9 51 35 88 80 180 78 103-3 194-52 281-112-50 67-115 124-211 158-108 38-228 21-293-43-28-28-42-51-48-72z" fill="url(#frontWaveDark)"/>
+    <path d="M543 626c49 50 123 80 211 88 115 10 223-31 306-111-67 104-180 159-311 151-92-6-172-48-206-128z" fill="#072cb5" opacity=".62"/>
+</svg>

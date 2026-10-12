@@ -1,0 +1,52 @@
+{
+  "id": "d4f7a8b9-c0d1-4e2f-9a3b-4c5d6e7f8a9b",
+  "title": "Quarter review",
+  "context": "",
+  "template_key": "blank",
+  "anonymity": "anonymous",
+  "stage": "write",
+  "cards_hidden": true,
+  "closed": false,
+  "columns": [
+    {
+      "title": "Start",
+      "description": "Things to begin",
+      "cards": [
+        {
+          "body": "+ Pair more often",
+          "votes": null,
+          "hidden": true,
+          "comments": [],
+          "action_items": [],
+          "merged_cards": []
+        }
+      ],
+      "hidden_count": 2
+    },
+    {
+      "title": "Stop",
+      "description": "",
+      "cards": [],
+      "hidden_count": 1
+    },
+    {
+      "title": "Continue",
+      "description": "",
+      "cards": [],
+      "hidden_count": 0
+    }
+  ],
+  "other_actions": [
+    {
+      "title": "Ask @Olu about the budget",
+      "assignee": "Olu",
+      "due_on": null,
+      "status": "open"
+    },
+    {
+      "title": "@channel fix flaky tests",
+      "due_on": "2026-10-01",
+      "status": "done"
+    }
+  ]
+}

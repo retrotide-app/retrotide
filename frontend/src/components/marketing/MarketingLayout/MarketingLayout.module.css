@@ -1,0 +1,143 @@
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    padding-top: env(safe-area-inset-top, 0px);
+    color: var(--colour-on-inverse);
+    background: var(--colour-inverse-bg);
+    border-bottom: 1px solid var(--colour-inverse-rule);
+}
+
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    max-width: var(--landing-width);
+    height: var(--header-height);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--colour-on-inverse);
+    text-decoration: none;
+}
+
+.brand:hover {
+    color: var(--colour-on-inverse);
+}
+
+.mark {
+    width: 2rem;
+    height: 2rem;
+}
+
+.wordmark {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    letter-spacing: -0.01em;
+}
+
+.wordmarkTide {
+    color: var(--brand-wave-sky);
+}
+
+.sections {
+    display: flex;
+    gap: 1.5rem;
+    font-weight: 600;
+}
+
+.account {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-left: auto;
+    font-weight: 600;
+}
+
+.main {
+    flex: 1;
+}
+
+.main:focus {
+    outline: none;
+}
+
+.footer {
+    padding: 3rem 0 calc(2rem + env(safe-area-inset-bottom, 0px));
+    background: var(--colour-surface);
+    border-top: 1px solid var(--colour-border);
+}
+
+.footerInner {
+    max-width: var(--landing-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.footerNav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem 4rem;
+}
+
+.footerGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.footerHeading {
+    font-weight: 700;
+    color: var(--colour-text);
+}
+
+.footerBase {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--colour-text-muted);
+    border-top: 1px solid var(--colour-border);
+}
+
+@media (max-width: 760px) {
+    .sections {
+        display: none;
+    }
+}
+
+@media (max-width: 560px) {
+    .bar,
+    .footerInner {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .bar {
+        gap: 1rem;
+    }
+
+    .wordmark {
+        font-size: 1.05rem;
+    }
+
+    .account {
+        gap: 0.75rem;
+    }
+}

@@ -1,0 +1,48 @@
+version: "2"
+rules:
+  - name: board-child-scoped
+    message: "board child tables must be filtered by board_id"
+    rule: >-
+      query.sql.matches("(?is)^\\s*(select|update|delete|with)\\b")
+      && query.sql.matches("(?i)\\b(board_participants|board_ops|board_columns|cards|card_votes|board_vote_budgets|card_comments|card_mentions|card_comment_mentions|card_reactions|media|board_surveys|survey_questions|survey_responses)\\b")
+      && !query.sql.matches("(?is)\\bwhere\\b.*\\bboard_id\\s*=")
+  - name: org-scoped
+    message: "organisation tables must be filtered by org_id"
+    rule: >-
+      query.sql.matches("(?is)^\\s*(select|update|delete|with)\\b")
+      && query.sql.matches("(?i)\\b(organisation_members|organisation_invites|teams|team_members|boards|action_items|action_item_reviews|action_item_mentions|subscriptions|billing_customers|org_entitlement_overrides|saved_templates|board_pins)\\b")
+      && !query.sql.matches("(?is)\\bwhere\\b.*\\borg_id\\s*=")
+sql:
+  - engine: postgresql
+    schema: internal/db/migrations
+    queries:
+      - internal/dao/queries
+      - internal/dao/queries/gen
+    rules:
+      - board-child-scoped
+      - org-scoped
+    gen:
+      go:
+        package: sqlcgen
+        out: internal/dao/sqlcgen
+        sql_package: database/sql
+        sql_driver: github.com/jackc/pgx/v5
+        emit_interface: false
+        emit_empty_slices: true
+        emit_pointers_for_null_types: true
+        overrides:
+          - db_type: uuid
+            go_type: github.com/google/uuid.UUID
+          - db_type: uuid
+            nullable: true
+            go_type:
+              import: github.com/google/uuid
+              type: UUID
+              pointer: true
+          - db_type: citext
+            go_type: string
+          - db_type: citext
+            nullable: true
+            go_type:
+              type: string
+              pointer: true

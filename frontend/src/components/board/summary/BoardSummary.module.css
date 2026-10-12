@@ -1,0 +1,106 @@
+.report {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.facts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    color: var(--colour-text-muted);
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    align-items: start;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.cards,
+.merged,
+.comments,
+.actions {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cards {
+    gap: 0.75rem;
+}
+
+.merged {
+    gap: 0.5rem;
+    padding-inline-start: 1rem;
+    border-inline-start: 2px solid var(--colour-border);
+}
+
+.comments,
+.actions {
+    gap: 0.35rem;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+    padding-block-end: 0.75rem;
+    border-bottom: 1px solid var(--colour-border);
+}
+
+.merged .card {
+    padding-block-end: 0;
+    border-bottom: none;
+}
+
+.body {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--colour-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.comment {
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    min-width: 0;
+}
+
+.actionTitle {
+    flex: 1 1 12rem;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.note {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--colour-text-muted);
+}

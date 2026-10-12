@@ -1,0 +1,11 @@
+.article {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+}
+
+@media (max-width: 560px) {
+    .article {
+        padding: 2rem 1rem 3rem;
+    }
+}

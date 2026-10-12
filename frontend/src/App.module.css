@@ -1,0 +1,81 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.main {
+    flex: 1;
+    min-width: 0;
+    margin-left: var(--sidebar-width);
+}
+
+.content {
+    width: 100%;
+    max-width: var(--page-max-width);
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.content:has([data-layout="full-width"]) {
+    max-width: none;
+}
+
+.content:has([data-rail="people"]) {
+    padding-right: calc(var(--rail-width) + 2rem);
+}
+
+@media (max-width: 1400px) {
+    .content:has([data-rail="people"]) {
+        padding-right: 2rem;
+    }
+}
+
+.unavailable {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 1.25rem;
+    background: var(--colour-bg);
+}
+
+.unavailable:focus {
+    outline: none;
+}
+
+.unavailableCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 30rem;
+    padding: 2rem 1.75rem;
+    text-align: center;
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+    background: var(--colour-surface);
+    box-shadow: var(--shadow-md);
+}
+
+.unavailableTitle {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--colour-text);
+}
+
+@media (max-width: 960px) {
+    .main {
+        margin-left: 0;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .content {
+        padding: 0.75rem;
+    }
+}

@@ -1,0 +1,50 @@
+.timer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.timer .length {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+@media (max-width: 720px) {
+    .timer > * {
+        flex: 1 1 auto;
+    }
+
+    .timer .length {
+        flex: 1 1 6rem;
+    }
+}
+
+.clock {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.75rem;
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-pill);
+    background: var(--colour-surface);
+    color: var(--colour-text);
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.calm {
+    border-color: var(--colour-border-strong);
+}
+
+.amber {
+    border-color: var(--colour-warning);
+    background: var(--colour-warning-soft);
+}
+
+.red {
+    border-color: var(--colour-danger);
+    background: var(--colour-danger-soft);
+    color: var(--colour-danger);
+}

@@ -1,0 +1,332 @@
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.empty,
+.meta,
+.note {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--colour-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-width: 0;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+    min-width: 0;
+    padding: 1rem;
+    background: var(--colour-surface);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+}
+
+.cardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.cardTitle {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.question {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.prompt {
+    margin: 0;
+    padding: 0;
+    font-weight: 600;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.prompts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.choices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.choice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    cursor: pointer;
+    overflow-wrap: anywhere;
+}
+
+.choiceInput {
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--colour-accent);
+}
+
+.scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.error {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--colour-danger);
+    overflow-wrap: anywhere;
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.resultList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.resultRow {
+    display: grid;
+    grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) 2.5rem;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.resultLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.track {
+    display: block;
+    height: 0.6rem;
+    background: var(--colour-surface-sunken);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.bar {
+    display: block;
+    height: 100%;
+    background: var(--colour-accent);
+}
+
+.resultCount {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+}
+
+.average {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--colour-text);
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.groupLabel {
+    margin: 0;
+    font-weight: 700;
+    color: var(--colour-text);
+}
+
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.35rem;
+    height: 100%;
+    min-width: 0;
+    padding: 0.875rem;
+    text-align: start;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.tileTitle {
+    font-weight: 700;
+}
+
+.tileText {
+    font-size: 0.85rem;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.builder {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
+.fieldLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--colour-text);
+}
+
+.questionRow {
+    display: grid;
+    grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+    gap: 0.75rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0.875rem;
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+}
+
+.questionLegend {
+    padding: 0 0.25rem;
+    font-weight: 700;
+    color: var(--colour-text);
+}
+
+.questionDetail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.optionRow,
+.scaleRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.optionInput {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.scaleInput {
+    width: 6rem;
+}
+
+.builderActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.builderButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+@media (max-width: 720px) {
+    .questionRow {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .resultRow {
+        grid-template-columns: minmax(0, 5rem) minmax(0, 1fr) 2rem;
+    }
+}

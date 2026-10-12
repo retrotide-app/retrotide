@@ -1,0 +1,45 @@
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: 1rem;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.term {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--colour-text-muted);
+}
+
+.value {
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.muted {
+    color: var(--colour-text-muted);
+}
+
+.number {
+    font-variant-numeric: tabular-nums;
+}

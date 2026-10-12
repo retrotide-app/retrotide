@@ -1,0 +1,21 @@
+.field {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--colour-text-muted);
+}
+
+.label {
+    font-weight: 600;
+}
+
+.field .select {
+    width: auto;
+}
+
+@media (max-width: 480px) {
+    .field {
+        gap: 0.35rem;
+    }
+}

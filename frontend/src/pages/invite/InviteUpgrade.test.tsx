@@ -1,0 +1,30 @@
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { renderWithProviders } from "../../test-utils/render";
+import { InviteUpgrade } from "./InviteUpgrade";
+
+describe("InviteUpgrade", () => {
+    it("says the plan's limit, that paid plans are coming, and who to ask", () => {
+        // given
+        const upgrade = {
+            error: "upgrade required",
+            code: "upgrade_required",
+            limit: "members" as const,
+            allowed: 10,
+            current: 10,
+            plan: "free" as const,
+        };
+
+        // when
+        renderWithProviders(<InviteUpgrade upgrade={upgrade} orgName="Harbour" />);
+
+        // then
+        const prompt = screen.getByRole("alert");
+        expect(prompt).toHaveTextContent("The free plan allows 10 members.");
+        expect(prompt).toHaveTextContent("Paid plans are coming. Until then, this limit stays.");
+        expect(prompt).toHaveFocus();
+        expect(screen.getByText(/has reached its plan's limit/)).toHaveTextContent(
+            "Harbour has reached its plan's limit. Ask the person who invited you.",
+        );
+    });
+});

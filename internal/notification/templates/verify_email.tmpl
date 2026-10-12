@@ -1,0 +1,15 @@
+{{template "header" .}}
+        <tr><td style="padding:32px 40px;">
+          <h1 style="margin:0 0 16px;font-size:20px;line-height:1.3;color:#031630;">{{if .ChangesEmail}}Confirm your new email address{{else}}Confirm your email address{{end}}</h1>
+          <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#031630;">
+            {{if .ChangesEmail}}Someone asked to change the email address on a <strong><bdi>{{.SiteName}}</bdi></strong> account to this address. The change takes effect once you confirm it.{{else}}Welcome to <strong><bdi>{{.SiteName}}</bdi></strong>. Confirm this email address to finish setting up your account.{{end}}
+          </p>
+          <p style="margin:0 0 24px;">
+            <a href="{{.LinkURL}}" style="display:inline-block;padding:12px 24px;background:#1466ed;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;">Confirm email address</a>
+          </p>
+          <p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#45597a;">
+            This link expires in 24 hours. {{if .ChangesEmail}}If you did not ask to change your email address, ignore this email and the address stays as it is.{{else}}If you did not create this account, ignore this email.{{end}}
+          </p>
+          <p style="margin:0;font-size:12px;line-height:1.6;color:#45597a;word-break:break-all;">{{.LinkURL}}</p>
+        </td></tr>
+{{template "footer" .}}

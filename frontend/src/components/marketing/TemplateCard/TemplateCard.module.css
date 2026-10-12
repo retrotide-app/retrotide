@@ -1,0 +1,76 @@
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+    height: 100%;
+    padding: 1.1rem 1.2rem;
+    background: var(--colour-surface);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition:
+        box-shadow 0.15s var(--ease-out),
+        border-color 0.15s var(--ease-out);
+}
+
+.card:hover {
+    border-color: var(--colour-border-strong);
+    box-shadow: var(--shadow-md);
+}
+
+.card:focus-within {
+    outline: 2px solid var(--colour-focus);
+    outline-offset: 2px;
+}
+
+.strip {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.swatch {
+    flex: 1 1 0;
+    height: 0.4rem;
+    background: var(--board-colour);
+    border-radius: var(--radius-sm);
+}
+
+.name {
+    margin-top: 0.25rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    line-height: 1.3;
+    color: var(--colour-text);
+    overflow-wrap: anywhere;
+}
+
+.link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.link:focus-visible {
+    outline: none;
+}
+
+.link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.description {
+    font-size: 0.925rem;
+    line-height: 1.45;
+    color: var(--colour-text-muted);
+}
+
+.count {
+    margin-top: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--colour-text-muted);
+}

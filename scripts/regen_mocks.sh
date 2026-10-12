@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if ! go tool mockery version >/dev/null 2>&1; then
+    pinned="$(go list -m -f '{{.Version}}' github.com/vektra/mockery/v3)"
+    echo "mockery is not installed as a go tool. Installing ${pinned}..."
+    go get -tool "github.com/vektra/mockery/v3@${pinned}"
+fi
+
+echo "Regenerating mocks..."
+go tool mockery
+echo "Done."

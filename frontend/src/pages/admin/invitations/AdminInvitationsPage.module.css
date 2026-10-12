@@ -1,0 +1,41 @@
+.invite {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.inviteRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.inviteField {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.inviteAction {
+    margin-bottom: 1rem;
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.when {
+    white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.empty {
+    color: var(--colour-text-muted);
+}

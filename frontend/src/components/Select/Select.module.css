@@ -1,0 +1,42 @@
+.select {
+    background: var(--colour-surface-sunken);
+    border: 1px solid var(--colour-border);
+    color: var(--colour-text);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    width: 100%;
+    cursor: pointer;
+    transition:
+        border-color 0.2s var(--ease-out),
+        box-shadow 0.2s var(--ease-out);
+}
+
+.medium {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+}
+
+.small {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+}
+
+.select:hover:not(:disabled) {
+    border-color: var(--colour-border-strong);
+}
+
+.select:focus {
+    outline: none;
+    border-color: var(--colour-accent);
+    box-shadow: 0 0 0 1px var(--colour-accent);
+}
+
+.select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.select option {
+    background: var(--colour-surface);
+    color: var(--colour-text);
+}

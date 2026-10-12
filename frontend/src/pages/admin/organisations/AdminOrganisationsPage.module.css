@@ -1,0 +1,30 @@
+.search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.searchField {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.searchAction {
+    margin-bottom: 1rem;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.muted {
+    color: var(--colour-text-muted);
+}
+
+.number {
+    font-variant-numeric: tabular-nums;
+}
