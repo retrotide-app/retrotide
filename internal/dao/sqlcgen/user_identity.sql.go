@@ -59,18 +59,19 @@ DELETE FROM user_identities
 WHERE user_identities.user_id = $1
   AND user_identities.provider = $2
   AND (
-      EXISTS (SELECT 1 FROM users WHERE users.id = $1 AND users.password_hash IS NOT NULL)
+      ($3::boolean AND EXISTS (SELECT 1 FROM users WHERE users.id = $1 AND users.password_hash IS NOT NULL))
       OR EXISTS (SELECT 1 FROM user_identities AS other WHERE other.user_id = $1 AND other.provider <> $2)
   )
 `
 
 type DeleteUserIdentityUnlessLastParams struct {
-	UserID   uuid.UUID
-	Provider string
+	UserID         uuid.UUID
+	Provider       string
+	PasswordCounts bool
 }
 
 func (q *Queries) DeleteUserIdentityUnlessLast(ctx context.Context, arg DeleteUserIdentityUnlessLastParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, deleteUserIdentityUnlessLast, arg.UserID, arg.Provider)
+	result, err := q.db.ExecContext(ctx, deleteUserIdentityUnlessLast, arg.UserID, arg.Provider, arg.PasswordCounts)
 	if err != nil {
 		return 0, err
 	}

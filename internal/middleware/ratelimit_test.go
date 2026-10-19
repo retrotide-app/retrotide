@@ -66,6 +66,7 @@ func TestRateLimitByClientIP_AllowsTheBudgetThenRefuses(t *testing.T) {
 	}{
 		{name: "credentials", limit: func(r *RateLimits) gin.HandlerFunc { return r.RateLimitCredentials }, allowed: CredentialAttemptsPerMinute, retryAfter: "6"},
 		{name: "mail", limit: func(r *RateLimits) gin.HandlerFunc { return r.RateLimitMail }, allowed: MailAttemptsPerHour, retryAfter: "720"},
+		{name: "client errors", limit: func(r *RateLimits) gin.HandlerFunc { return r.ClientErrorLimit }, allowed: ClientErrorReportsPerMinute, retryAfter: "2"},
 	}
 
 	for _, tc := range tests {

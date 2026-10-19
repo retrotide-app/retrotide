@@ -36,7 +36,7 @@ describe("MarketingLayout", () => {
         );
     });
 
-    it("links the templates, pricing, comparison and self-hosting pages from the header", () => {
+    it("links the templates, comparison and self-hosting pages from the header, but not pricing while it is hidden", () => {
         // given
         const ui = <MarketingLayout />;
 
@@ -45,14 +45,8 @@ describe("MarketingLayout", () => {
 
         // then
         const site = within(screen.getByRole("navigation", { name: "Site" }));
-        expect(site.getAllByRole("link").map(link => link.textContent)).toEqual([
-            "Templates",
-            "Pricing",
-            "Compare",
-            "Self-host",
-        ]);
+        expect(site.getAllByRole("link").map(link => link.textContent)).toEqual(["Templates", "Compare", "Self-host"]);
         expect(site.getByRole("link", { name: "Templates" })).toHaveAttribute("href", "/templates");
-        expect(site.getByRole("link", { name: "Pricing" })).toHaveAttribute("href", "/pricing");
         expect(site.getByRole("link", { name: "Compare" })).toHaveAttribute("href", "/compare/easyretro");
         expect(site.getByRole("link", { name: "Self-host" })).toHaveAttribute("href", "/self-host");
     });

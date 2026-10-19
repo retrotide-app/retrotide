@@ -18,7 +18,7 @@ type (
 
 		RegisterWithIdentity(ctx context.Context, s spec.IdentityRegistration, tx ...*sql.Tx) (*model.User, error)
 		LinkToAccount(ctx context.Context, s spec.IdentityLink, tx ...*sql.Tx) (*model.UserIdentity, error)
-		Unlink(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) (*model.UserIdentity, error)
+		Unlink(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) (*model.UserIdentity, error)
 	}
 
 	userIdentityRepository struct {
@@ -125,7 +125,7 @@ func (r *userIdentityRepository) LinkToAccount(ctx context.Context, s spec.Ident
 	return linked, nil
 }
 
-func (r *userIdentityRepository) Unlink(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) (*model.UserIdentity, error) {
+func (r *userIdentityRepository) Unlink(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) (*model.UserIdentity, error) {
 	var removed *model.UserIdentity
 
 	err := db.WithTx(ctx, r.db, tx, func(tx *sql.Tx) error {
@@ -133,7 +133,7 @@ func (r *userIdentityRepository) Unlink(ctx context.Context, s spec.UserIdentity
 			return err
 		}
 
-		identity, err := r.UserIdentityDAO.GetForUser(ctx, s, tx)
+		identity, err := r.UserIdentityDAO.GetForUser(ctx, s.UserIdentityKey, tx)
 		if err != nil {
 			return err
 		}

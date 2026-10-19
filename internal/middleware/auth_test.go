@@ -180,6 +180,72 @@ func signedIn(userID uuid.UUID) string {
 	return string(model.PrincipalUser) + ":" + userID.String()
 }
 
+func sessionContext(t *testing.T) *gin.Context {
+	t.Helper()
+
+	c, _ := gin.CreateTestContext(httptest.NewRecorder())
+	c.Request = httptest.NewRequestWithContext(t.Context(), http.MethodGet, probeRoute, nil)
+	c.Request.AddCookie(&http.Cookie{Name: hostSessionCookie, Value: sessionToken})
+
+	return c
+}
+
+func TestUserGuard_LooksUpTheSessionOncePerRequest(t *testing.T) {
+	// given one request that the private-site gate and then the route guard both resolve
+	f := newAuthFixture(t, nil)
+	userID := uuid.New()
+	f.sessionRepo.EXPECT().Get(mock.Anything, sessionToken).Return(&model.Session{UserID: userID}, nil).Once()
+	f.accounts.EXPECT().IsBanned(mock.Anything, userID).Return(false, nil).Once()
+	c := sessionContext(t)
+
+	// when
+	firstID, firstState := f.guards.users.resolve(c)
+	secondID, secondState := f.guards.users.resolve(c)
+
+	// then the second answer comes from the request, which the strict mocks confirm
+	assert.Equal(t, userID, firstID)
+	assert.Equal(t, sessionLive, firstState)
+	assert.Equal(t, firstID, secondID)
+	assert.Equal(t, firstState, secondState)
+}
+
+func TestUserGuard_KeepsABannedAnswerForTheRestOfTheRequest(t *testing.T) {
+	// given
+	f := newAuthFixture(t, nil)
+	userID := uuid.New()
+	f.sessionRepo.EXPECT().Get(mock.Anything, sessionToken).Return(&model.Session{UserID: userID}, nil).Once()
+	f.accounts.EXPECT().IsBanned(mock.Anything, userID).Return(true, nil).Once()
+	f.sessionRepo.EXPECT().Delete(mock.Anything, sessionToken).Return(nil).Once()
+	c := sessionContext(t)
+
+	// when
+	_, firstState := f.guards.users.resolve(c)
+	_, secondState := f.guards.users.resolve(c)
+
+	// then the session is revoked once, and the second guard still sees the ban
+	assert.Equal(t, sessionBanned, firstState)
+	assert.Equal(t, sessionBanned, secondState)
+}
+
+func TestUserGuard_NeverKeepsALookupThatFailed(t *testing.T) {
+	// given a session store that fails once and then answers
+	f := newAuthFixture(t, nil)
+	userID := uuid.New()
+	f.sessionRepo.EXPECT().Get(mock.Anything, sessionToken).Return(nil, errDatabaseDown).Once()
+	f.sessionRepo.EXPECT().Get(mock.Anything, sessionToken).Return(&model.Session{UserID: userID}, nil).Once()
+	f.accounts.EXPECT().IsBanned(mock.Anything, userID).Return(false, nil).Once()
+	c := sessionContext(t)
+
+	// when
+	_, firstState := f.guards.users.resolve(c)
+	secondID, secondState := f.guards.users.resolve(c)
+
+	// then a failure is never mistaken for an answer
+	assert.Equal(t, sessionUnchecked, firstState)
+	assert.Equal(t, userID, secondID)
+	assert.Equal(t, sessionLive, secondState)
+}
+
 func TestAuth_RefusesARequestWithoutASessionCookie(t *testing.T) {
 	// given
 	f := newAuthFixture(t, nil)

@@ -213,6 +213,26 @@ func (q *Queries) DeleteUserTOTP(ctx context.Context, userID uuid.UUID) (int64, 
 	return result.RowsAffected()
 }
 
+const getLiveTwoFactorChallenge = `-- name: GetLiveTwoFactorChallenge :one
+SELECT token_hash, user_id, return_to, attempts, created_at, expires_at, remember FROM two_factor_challenges
+WHERE token_hash = $1 AND expires_at > NOW()
+`
+
+func (q *Queries) GetLiveTwoFactorChallenge(ctx context.Context, tokenHash string) (TwoFactorChallenge, error) {
+	row := q.db.QueryRowContext(ctx, getLiveTwoFactorChallenge, tokenHash)
+	var i TwoFactorChallenge
+	err := row.Scan(
+		&i.TokenHash,
+		&i.UserID,
+		&i.ReturnTo,
+		&i.Attempts,
+		&i.CreatedAt,
+		&i.ExpiresAt,
+		&i.Remember,
+	)
+	return i, err
+}
+
 const getUserTOTP = `-- name: GetUserTOTP :one
 SELECT user_id, secret, confirmed_at, last_used_step, created_at FROM user_totp WHERE user_id = $1
 `

@@ -29,6 +29,7 @@ type (
 		BeginEnrolment(ctx context.Context, start spec.TwoFactorEnrolmentStart) (*dto.TwoFactorEnrolmentResponse, error)
 		ConfirmEnrolment(ctx context.Context, confirmation spec.TwoFactorConfirmation) (*dto.TwoFactorRecoveryCodesResponse, error)
 		Disable(ctx context.Context, entry spec.TwoFactorCodeEntry) error
+		ChallengeOwner(ctx context.Context, challengeToken string) (uuid.UUID, error)
 		Verify(ctx context.Context, verification spec.TwoFactorVerification) (*Passed, error)
 	}
 
@@ -250,6 +251,18 @@ func (s *service) Disable(ctx context.Context, entry spec.TwoFactorCodeEntry) er
 	logger.Ctx(ctx).Info().Str("user_id", entry.UserID.String()).Msg("two-factor authentication turned off")
 
 	return s.record(ctx, entry, audit.ActionTwoFactorDisabled)
+}
+
+func (s *service) ChallengeOwner(ctx context.Context, challengeToken string) (uuid.UUID, error) {
+	challenge, err := s.twoFactor.GetLiveChallenge(ctx, token.Hash(challengeToken))
+	if errors.Is(err, dao.ErrNotFound) {
+		return uuid.Nil, fmt.Errorf("%w: %w", ErrChallengeExpired, err)
+	}
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("read the two-factor challenge: %w", err)
+	}
+
+	return challenge.UserID, nil
 }
 
 func (s *service) Verify(ctx context.Context, verification spec.TwoFactorVerification) (*Passed, error) {

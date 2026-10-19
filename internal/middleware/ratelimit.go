@@ -22,6 +22,7 @@ type (
 		RateLimitMail        gin.HandlerFunc
 		BoardWriteLimit      gin.HandlerFunc
 		BoardJoinLimit       gin.HandlerFunc
+		ClientErrorLimit     gin.HandlerFunc
 
 		credentialsByAccount *bucketSet
 		mailByAccount        *bucketSet
@@ -56,12 +57,14 @@ const (
 	BoardWriteBurst             = 30
 	BoardJoinsPerMinute         = 10
 	BoardJoinsPerMinuteFromIP   = 600
+	ClientErrorReportsPerMinute = 30
 
 	credentialRefill    = time.Minute / CredentialAttemptsPerMinute
 	mailRefill          = time.Hour / MailAttemptsPerHour
 	boardWriteRefill    = time.Second / BoardWritesPerSecond
 	boardJoinRefill     = time.Minute / BoardJoinsPerMinute
 	boardJoinIPRefill   = time.Minute / BoardJoinsPerMinuteFromIP
+	clientErrorRefill   = time.Minute / ClientErrorReportsPerMinute
 	slugParam           = "slug"
 	bucketSweepInterval = time.Minute
 
@@ -81,6 +84,7 @@ func NewRateLimits() *RateLimits {
 			{buckets: newBucketSet(boardJoinIPRefill, BoardJoinsPerMinuteFromIP), key: (*gin.Context).ClientIP},
 			{buckets: newBucketSet(boardJoinRefill, BoardJoinsPerMinute), key: joinKey},
 		}.handle,
+		ClientErrorLimit:     keyedLimit{buckets: newBucketSet(clientErrorRefill, ClientErrorReportsPerMinute), key: (*gin.Context).ClientIP}.handle,
 		credentialsByAccount: newBucketSet(credentialRefill, CredentialAttemptsPerMinute),
 		mailByAccount:        newBucketSet(mailRefill, MailAttemptsPerHour),
 	}

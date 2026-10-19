@@ -61,6 +61,7 @@ func TestService_RouteTable(t *testing.T) {
 		"POST /api/v1/notifications/:id/read",
 		"GET /api/v1/site-info",
 		"HEAD /api/v1/site-info",
+		"POST /api/v1/client-errors",
 		"GET /api/v1/admin/users",
 		"HEAD /api/v1/admin/users",
 		"GET /api/v1/admin/users/:id",

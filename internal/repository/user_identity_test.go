@@ -403,6 +403,7 @@ func TestUserIdentityRepositoryUnlink_RemovesTheIdentityUnderTheAccountLock(t *t
 	tx := new(sql.Tx)
 	inTx := []*sql.Tx{tx}
 	key := spec.UserIdentityKey{UserID: uuid.New(), Provider: model.ProviderGoogle}
+	removal := spec.UserIdentityRemoval{UserIdentityKey: key, PasswordCounts: true}
 	held := &model.UserIdentity{UserID: key.UserID, Provider: model.ProviderGoogle, Subject: googleSubject, Email: "owner@gmail.com"}
 	var order []string
 	mocks.users.EXPECT().GetForUpdate(mock.Anything, key.UserID, inTx).RunAndReturn(func(context.Context, uuid.UUID, ...*sql.Tx) (*model.User, error) {
@@ -413,13 +414,13 @@ func TestUserIdentityRepositoryUnlink_RemovesTheIdentityUnderTheAccountLock(t *t
 		order = append(order, "read")
 		return held, nil
 	}).Once()
-	mocks.identities.EXPECT().DeleteUnlessLast(mock.Anything, key, inTx).RunAndReturn(func(context.Context, spec.UserIdentityKey, ...*sql.Tx) error {
+	mocks.identities.EXPECT().DeleteUnlessLast(mock.Anything, removal, inTx).RunAndReturn(func(context.Context, spec.UserIdentityRemoval, ...*sql.Tx) error {
 		order = append(order, "delete")
 		return nil
 	}).Once()
 
 	// when
-	got, err := repo.Unlink(t.Context(), key, tx)
+	got, err := repo.Unlink(t.Context(), removal, tx)
 
 	// then
 	require.NoError(t, err)
@@ -437,7 +438,7 @@ func TestUserIdentityRepositoryUnlink_AnAccountWithoutTheIdentityIsNotFound(t *t
 	mocks.identities.EXPECT().GetForUser(mock.Anything, key, inTx).Return(nil, dao.ErrNotFound).Once()
 
 	// when
-	got, err := repo.Unlink(t.Context(), key, tx)
+	got, err := repo.Unlink(t.Context(), spec.UserIdentityRemoval{UserIdentityKey: key, PasswordCounts: true}, tx)
 
 	// then a repeated unlink is a 404 rather than a 409
 	require.ErrorIs(t, err, dao.ErrNotFound)
@@ -452,11 +453,12 @@ func TestUserIdentityRepositoryUnlink_RefusesTheLastWayToSignIn(t *testing.T) {
 	inTx := []*sql.Tx{tx}
 	key := spec.UserIdentityKey{UserID: uuid.New(), Provider: model.ProviderGoogle}
 	mocks.users.EXPECT().GetForUpdate(mock.Anything, key.UserID, inTx).Return(&model.User{ID: key.UserID}, nil).Once()
+	removal := spec.UserIdentityRemoval{UserIdentityKey: key, PasswordCounts: true}
 	mocks.identities.EXPECT().GetForUser(mock.Anything, key, inTx).Return(&model.UserIdentity{UserID: key.UserID}, nil).Once()
-	mocks.identities.EXPECT().DeleteUnlessLast(mock.Anything, key, inTx).Return(dao.ErrLastSignInMethod).Once()
+	mocks.identities.EXPECT().DeleteUnlessLast(mock.Anything, removal, inTx).Return(dao.ErrLastSignInMethod).Once()
 
 	// when
-	got, err := repo.Unlink(t.Context(), key, tx)
+	got, err := repo.Unlink(t.Context(), removal, tx)
 
 	// then
 	require.ErrorIs(t, err, dao.ErrLastSignInMethod)
@@ -472,7 +474,7 @@ func TestUserIdentityRepositoryUnlink_AnUnknownAccountIsNotFound(t *testing.T) {
 	mocks.users.EXPECT().GetForUpdate(mock.Anything, key.UserID, inTx).Return(nil, dao.ErrNotFound).Once()
 
 	// when
-	got, err := repo.Unlink(t.Context(), key, tx)
+	got, err := repo.Unlink(t.Context(), spec.UserIdentityRemoval{UserIdentityKey: key, PasswordCounts: true}, tx)
 
 	// then
 	require.ErrorIs(t, err, dao.ErrNotFound)

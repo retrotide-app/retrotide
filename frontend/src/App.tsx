@@ -15,6 +15,7 @@ import {
     LEGAL_ROUTE,
     offersMarketing,
     PRICING_PATH,
+    PRICING_VISIBLE,
     SELF_HOST_PATH,
     TEMPLATE_ROUTE,
     TEMPLATES_PATH,
@@ -204,7 +205,7 @@ function AppRoutes() {
             <Routes>
                 <Route path="/" element={<FrontDoor />} />
                 <Route element={<MarketingGate />}>
-                    <Route path={PRICING_PATH} element={<PricingPage />} />
+                    {PRICING_VISIBLE && <Route path={PRICING_PATH} element={<PricingPage />} />}
                     <Route path={COMPARE_EASYRETRO_PATH} element={<CompareEasyRetroPage />} />
                     <Route path={SELF_HOST_PATH} element={<SelfHostPage />} />
                     <Route path={TEMPLATES_PATH} element={<TemplatesPage />} />

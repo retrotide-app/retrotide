@@ -80,7 +80,7 @@ func NewHarness(t *testing.T) *Harness {
 	sessions := session.NewManager(sessionRepo, settingsService)
 	guests := guest.NewManager(guestRepo, settingsService)
 
-	engine, err := utils.NewEngine(utils.DefaultTrustedProxies)
+	engine, err := utils.NewEngine(utils.DefaultTrustedProxies, config.DeploymentHosted)
 	require.NoError(t, err)
 
 	return &Harness{

@@ -5,7 +5,7 @@ import { MarketingHero } from "../../components/marketing/MarketingHero/Marketin
 import { MarketingLayout } from "../../components/marketing/MarketingLayout/MarketingLayout";
 import { MarketingSection } from "../../components/marketing/MarketingSection/MarketingSection";
 import { TextLink } from "../../components/TextLink/TextLink";
-import { PRICING_PATH } from "../../domain/marketing";
+import { PRICING_PATH, PRICING_VISIBLE } from "../../domain/marketing";
 import { FREE_DAILY_BOARD_LIMIT, FREE_MEMBER_LIMIT } from "../../domain/pricing";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import styles from "./CompareEasyRetroPage.module.css";
@@ -101,7 +101,7 @@ export function CompareEasyRetroPage() {
                 </div>
                 <p className={styles.footnote}>
                     {`${CHECKED_LABEL}. Plans and features change, so check EasyRetro's own site for its current offer. `}
-                    <TextLink to={PRICING_PATH}>See RetroTide's pricing</TextLink>
+                    {PRICING_VISIBLE && <TextLink to={PRICING_PATH}>See RetroTide's pricing</TextLink>}
                 </p>
             </MarketingSection>
         </MarketingLayout>

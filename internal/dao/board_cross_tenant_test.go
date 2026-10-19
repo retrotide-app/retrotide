@@ -261,7 +261,7 @@ func TestCard_CrossTenantCardsAreOnlyReachedThroughTheirBoard(t *testing.T) {
 func (bt boardTenants) mediaOn(t *testing.T, orgID uuid.UUID, board *model.BoardState, kind model.MediaKind) *model.Media {
 	t.Helper()
 
-	created, err := bt.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: orgID, BoardID: board.Header.ID, Kind: kind, Width: 4, Height: 3, Data: []byte("RIFF-webp-bytes")})
+	created, err := bt.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: orgID, BoardID: board.Header.ID, Kind: kind, Width: 4, Height: 3, Data: []byte("RIFF-webp-bytes"), MaxStoredBytes: testMediaStorage})
 	require.NoError(t, err)
 
 	return created
@@ -311,7 +311,7 @@ func TestBoard_CrossTenantMediaIsOnlyReachedThroughItsBoard(t *testing.T) {
 	mediaB := bt.mediaOn(t, bt.b.Organisation.ID, bt.boardB, model.MediaKindBackground)
 
 	// when
-	_, plantErr := bt.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: bt.b.Organisation.ID, BoardID: bt.boardA.Header.ID, Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte("x")})
+	_, plantErr := bt.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: bt.b.Organisation.ID, BoardID: bt.boardA.Header.ID, Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte("x"), MaxStoredBytes: testMediaStorage})
 	_, getErr := bt.repos.Media.Get(t.Context(), spec.MediaKey{BoardID: bt.boardB.Header.ID, MediaID: mediaA.ID})
 	_, openErr := bt.repos.Media.Open(t.Context(), spec.MediaKey{BoardID: bt.boardB.Header.ID, MediaID: mediaA.ID})
 	_, attachErr := bt.repos.Card.SetImage(t.Context(), spec.CardImageChange{BoardID: bt.boardA.Header.ID, CardID: bt.cardA.ID, MediaID: new(mediaB.ID)})

@@ -18,6 +18,7 @@ const LIMIT_NOUNS: Readonly<Record<PlanLimit, { one: string; many: string }>> = 
     members: { one: "member", many: "members" },
     saved_templates: { one: "saved template", many: "saved templates" },
     card_image_bytes: { one: "byte per image", many: "bytes per image" },
+    media_bytes: { one: "byte of image storage", many: "bytes of image storage" },
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -20,7 +20,7 @@ type (
 		GetBySubject(ctx context.Context, s spec.IdentitySubject, tx ...*sql.Tx) (*model.UserIdentity, error)
 		GetForUser(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) (*model.UserIdentity, error)
 		ListForUser(ctx context.Context, userID uuid.UUID, tx ...*sql.Tx) ([]model.UserIdentity, error)
-		DeleteUnlessLast(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) error
+		DeleteUnlessLast(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) error
 		DeleteAllForUser(ctx context.Context, userID uuid.UUID, tx ...*sql.Tx) (int64, error)
 	}
 
@@ -100,10 +100,11 @@ func (r *userIdentityDAO) ListForUser(ctx context.Context, userID uuid.UUID, tx 
 	return identities, nil
 }
 
-func (r *userIdentityDAO) DeleteUnlessLast(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) error {
+func (r *userIdentityDAO) DeleteUnlessLast(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) error {
 	deleted, err := sqlcgen.New(db.TxOrDB(r.db, tx)).DeleteUserIdentityUnlessLast(ctx, sqlcgen.DeleteUserIdentityUnlessLastParams{
-		UserID:   s.UserID,
-		Provider: string(s.Provider),
+		UserID:         s.UserID,
+		Provider:       string(s.Provider),
+		PasswordCounts: s.PasswordCounts,
 	})
 	if err != nil {
 		return fmt.Errorf("unlink %s identity of user %s: %w", s.Provider, s.UserID, err)

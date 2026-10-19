@@ -21,7 +21,7 @@ func TestFor_EveryOrganisationIsOnFreeWhileBillingIsOff(t *testing.T) {
 
 	// then
 	require.NoError(t, err)
-	assert.Equal(t, &Plan{Code: model.PlanFree, Limits: map[model.Limit]int{model.LimitTeams: 1, model.LimitMembers: 10, model.LimitSavedTemplates: 3, model.LimitCardImageBytes: 5242880}}, plan)
+	assert.Equal(t, &Plan{Code: model.PlanFree, Limits: map[model.Limit]int{model.LimitTeams: 1, model.LimitMembers: 10, model.LimitSavedTemplates: 3, model.LimitCardImageBytes: 5242880, model.LimitMediaBytes: 1073741824}}, plan)
 }
 
 func TestFor_AFallbackPlanMissingFromTheCatalogueIsAnError(t *testing.T) {

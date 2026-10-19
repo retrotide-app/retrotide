@@ -15,6 +15,7 @@ var (
 			path:        "/pricing",
 			title:       "Pricing" + siteSuffix,
 			description: "RetroTide is free for one team, with unlimited guests and boards, exports and action carry-over. Team and Organisation plans are coming soon.",
+			hidden:      true,
 		},
 		{
 			path:        "/compare/easyretro",
@@ -69,6 +70,10 @@ func IndexablePaths() []string {
 
 	paths := make([]string, 0, len(marketingPages)+len(templates))
 	for _, candidate := range marketingPages {
+		if candidate.hidden {
+			continue
+		}
+
 		paths = append(paths, candidate.path)
 	}
 

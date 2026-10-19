@@ -3,7 +3,7 @@ import { MarketingLayout } from "../../components/marketing/MarketingLayout/Mark
 import { PricingPlans } from "../../components/marketing/PricingPlans/PricingPlans";
 import { RevealBoard } from "../../components/marketing/RevealBoard/RevealBoard";
 import { TextLink } from "../../components/TextLink/TextLink";
-import { PRICING_PATH } from "../../domain/marketing";
+import { PRICING_PATH, PRICING_VISIBLE, SELF_HOST_PATH } from "../../domain/marketing";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import styles from "./LandingPage.module.css";
 
@@ -54,9 +54,11 @@ export function LandingPage() {
                             <ButtonLink to="/register" variant="primary" size="large">
                                 Start for free
                             </ButtonLink>
-                            <ButtonLink href="#pricing" size="large">
-                                See pricing
-                            </ButtonLink>
+                            {PRICING_VISIBLE && (
+                                <ButtonLink href="#pricing" size="large">
+                                    See pricing
+                                </ButtonLink>
+                            )}
                         </div>
                     </div>
                     <RevealBoard />
@@ -93,18 +95,22 @@ export function LandingPage() {
                 </div>
             </section>
 
-            <section id="pricing" className={styles.section} aria-labelledby="pricing-title">
-                <div className={styles.sectionHead}>
-                    <h2 id="pricing-title" className={styles.heading}>
-                        Pricing
-                    </h2>
-                    <p className={styles.intro}>Free for one team. Paid plans are charged per team, not per user.</p>
-                </div>
-                <PricingPlans />
-                <p className={styles.more}>
-                    <TextLink to={PRICING_PATH}>See the full pricing</TextLink>
-                </p>
-            </section>
+            {PRICING_VISIBLE && (
+                <section id="pricing" className={styles.section} aria-labelledby="pricing-title">
+                    <div className={styles.sectionHead}>
+                        <h2 id="pricing-title" className={styles.heading}>
+                            Pricing
+                        </h2>
+                        <p className={styles.intro}>
+                            Free for one team. Paid plans are charged per team, not per user.
+                        </p>
+                    </div>
+                    <PricingPlans />
+                    <p className={styles.more}>
+                        <TextLink to={PRICING_PATH}>See the full pricing</TextLink>
+                    </p>
+                </section>
+            )}
 
             <section id="self-hosting" className={styles.section} aria-labelledby="self-hosting-title">
                 <div className={styles.selfHosting}>
@@ -113,8 +119,11 @@ export function LandingPage() {
                             Host it yourself
                         </h2>
                         <p className={styles.intro}>
-                            Prefer to keep your data on your own servers? A self-hosted version is on the way. It runs
-                            as a single Docker image, for use within your own organisation.
+                            Prefer to keep your data on your own servers? Run RetroTide yourself with Docker, for use
+                            within your own organisation.
+                        </p>
+                        <p className={styles.more}>
+                            <TextLink to={SELF_HOST_PATH}>How to self-host RetroTide</TextLink>
                         </p>
                     </div>
                     <dl className={styles.facts}>
@@ -128,7 +137,7 @@ export function LandingPage() {
                         </div>
                         <div>
                             <dt>Available</dt>
-                            <dd>After launch</dd>
+                            <dd>Now</dd>
                         </div>
                     </dl>
                 </div>

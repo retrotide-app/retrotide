@@ -17,7 +17,7 @@ DELETE FROM user_identities
 WHERE user_identities.user_id = sqlc.arg(user_id)
   AND user_identities.provider = sqlc.arg(provider)
   AND (
-      EXISTS (SELECT 1 FROM users WHERE users.id = sqlc.arg(user_id) AND users.password_hash IS NOT NULL)
+      (sqlc.arg(password_counts)::boolean AND EXISTS (SELECT 1 FROM users WHERE users.id = sqlc.arg(user_id) AND users.password_hash IS NOT NULL))
       OR EXISTS (SELECT 1 FROM user_identities AS other WHERE other.user_id = sqlc.arg(user_id) AND other.provider <> sqlc.arg(provider))
   );
 

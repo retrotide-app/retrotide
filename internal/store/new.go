@@ -77,7 +77,7 @@ func New(db *sql.DB, c *cache.Manager) *repository.Repositories {
 	})
 	repos.SavedTemplate = repository.NewSavedTemplateRepo(db, dao.NewSavedTemplate(db), organisationDAO)
 	repos.CardReaction = repository.NewCardReactionRepo(db, reactionDAO, boardDAO)
-	repos.Media = repository.NewMediaRepo(dao.NewMedia(db))
+	repos.Media = repository.NewMediaRepo(db, dao.NewMedia(db), organisationDAO)
 	repos.Survey = repository.NewSurveyRepo(db, surveyDAO, boardDAO)
 
 	return repos

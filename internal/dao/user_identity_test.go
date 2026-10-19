@@ -29,6 +29,10 @@ func googleKey(userID uuid.UUID) spec.UserIdentityKey {
 	return spec.UserIdentityKey{UserID: userID, Provider: model.ProviderGoogle}
 }
 
+func googleRemoval(userID uuid.UUID, passwordCounts bool) spec.UserIdentityRemoval {
+	return spec.UserIdentityRemoval{UserIdentityKey: googleKey(userID), PasswordCounts: passwordCounts}
+}
+
 func googleSubject(subject string) spec.IdentitySubject {
 	return spec.IdentitySubject{Provider: model.ProviderGoogle, Subject: subject}
 }
@@ -137,7 +141,7 @@ func TestUserIdentityDAO_AnotherUsersIdentityCannotBeReadOrUnlinked(t *testing.T
 	// when user B's ID is used to reach it
 	_, readErr := repos.UserIdentity.GetForUser(t.Context(), googleKey(intruder.ID))
 	listed, listErr := repos.UserIdentity.ListForUser(t.Context(), intruder.ID)
-	_, unlinkErr := repos.UserIdentity.Unlink(t.Context(), googleKey(intruder.ID))
+	_, unlinkErr := repos.UserIdentity.Unlink(t.Context(), googleRemoval(intruder.ID, true))
 
 	// then nothing is found, and A's identity is unchanged
 	require.ErrorIs(t, readErr, dao.ErrNotFound)
@@ -199,13 +203,29 @@ func TestUserIdentityRepository_Unlink_BesideAPasswordRemovesTheIdentity(t *test
 	linked := linkIdentity(t, repos, user.ID, "sub-1")
 
 	// when
-	removed, err := repos.UserIdentity.Unlink(t.Context(), googleKey(user.ID))
+	removed, err := repos.UserIdentity.Unlink(t.Context(), googleRemoval(user.ID, true))
 
 	// then
 	require.NoError(t, err)
 	assert.Equal(t, *linked, *removed)
 	_, err = repos.UserIdentity.GetBySubject(t.Context(), googleSubject("sub-1"))
 	require.ErrorIs(t, err, dao.ErrNotFound)
+}
+
+func TestUserIdentityRepository_Unlink_APasswordDoesNotCountWhilePasswordSignInIsOff(t *testing.T) {
+	// given an account with a password it cannot use, because password sign-in is off
+	repos := daotest.NewRepos(t)
+	user := daotest.CreateUser(t, repos)
+	linkIdentity(t, repos, user.ID, "sub-1")
+
+	// when
+	_, err := repos.UserIdentity.Unlink(t.Context(), googleRemoval(user.ID, false))
+
+	// then the only working way in is kept
+	require.ErrorIs(t, err, dao.ErrLastSignInMethod)
+	got, err := repos.UserIdentity.GetForUser(t.Context(), googleKey(user.ID))
+	require.NoError(t, err)
+	assert.Equal(t, "sub-1", got.Subject)
 }
 
 func TestUserIdentityRepository_Unlink_APasswordlessAccountKeepsItsOnlyIdentity(t *testing.T) {
@@ -215,7 +235,7 @@ func TestUserIdentityRepository_Unlink_APasswordlessAccountKeepsItsOnlyIdentity(
 	linkIdentity(t, repos, user.ID, "sub-1")
 
 	// when
-	_, err := repos.UserIdentity.Unlink(t.Context(), googleKey(user.ID))
+	_, err := repos.UserIdentity.Unlink(t.Context(), googleRemoval(user.ID, true))
 
 	// then
 	require.ErrorIs(t, err, dao.ErrLastSignInMethod)
@@ -229,7 +249,7 @@ func TestUserIdentityRepository_Unlink_SucceedsOnceAPasswordIsSet(t *testing.T) 
 	repos := daotest.NewRepos(t)
 	user := daotest.CreateUser(t, repos, daotest.WithoutPassword(), daotest.WithVerifiedEmail())
 	linkIdentity(t, repos, user.ID, "sub-1")
-	_, err := repos.UserIdentity.Unlink(t.Context(), googleKey(user.ID))
+	_, err := repos.UserIdentity.Unlink(t.Context(), googleRemoval(user.ID, true))
 	require.ErrorIs(t, err, dao.ErrLastSignInMethod)
 	resetHash := uuid.NewString()
 	require.NoError(t, repos.PasswordReset.Issue(t.Context(), spec.NewPasswordReset{TokenHash: resetHash, UserID: user.ID, ExpiresAt: time.Now().Add(time.Hour)}))
@@ -237,7 +257,7 @@ func TestUserIdentityRepository_Unlink_SucceedsOnceAPasswordIsSet(t *testing.T) 
 	require.NoError(t, err)
 
 	// when
-	_, err = repos.UserIdentity.Unlink(t.Context(), googleKey(user.ID))
+	_, err = repos.UserIdentity.Unlink(t.Context(), googleRemoval(user.ID, true))
 
 	// then
 	require.NoError(t, err)
@@ -252,7 +272,7 @@ func TestUserIdentityRepository_Unlink_AProviderTheAccountHasNoIdentityForIsNotF
 	user := daotest.CreateUser(t, repos, daotest.WithoutPassword())
 
 	// when
-	_, err := repos.UserIdentity.Unlink(t.Context(), googleKey(user.ID))
+	_, err := repos.UserIdentity.Unlink(t.Context(), googleRemoval(user.ID, true))
 
 	// then a repeated unlink is a 404 rather than a 409
 	require.ErrorIs(t, err, dao.ErrNotFound)
@@ -264,7 +284,7 @@ func TestUserIdentityRepository_Unlink_AnUnknownAccountIsNotFound(t *testing.T) 
 	repos := daotest.NewRepos(t)
 
 	// when
-	_, err := repos.UserIdentity.Unlink(t.Context(), googleKey(uuid.New()))
+	_, err := repos.UserIdentity.Unlink(t.Context(), googleRemoval(uuid.New(), true))
 
 	// then
 	require.ErrorIs(t, err, dao.ErrNotFound)

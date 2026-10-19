@@ -892,6 +892,89 @@ func (_c *MockTwoFactorDAO_DeleteTrustedDevicesForUser_Call) RunAndReturn(run fu
 	return _c
 }
 
+// GetLiveChallenge provides a mock function for the type MockTwoFactorDAO
+func (_mock *MockTwoFactorDAO) GetLiveChallenge(ctx context.Context, tokenHash string, tx ...*sql.Tx) (*model.TwoFactorChallenge, error) {
+	var tmpRet mock.Arguments
+	if len(tx) > 0 {
+		tmpRet = _mock.Called(ctx, tokenHash, tx)
+	} else {
+		tmpRet = _mock.Called(ctx, tokenHash)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetLiveChallenge")
+	}
+
+	var r0 *model.TwoFactorChallenge
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...*sql.Tx) (*model.TwoFactorChallenge, error)); ok {
+		return returnFunc(ctx, tokenHash, tx...)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...*sql.Tx) *model.TwoFactorChallenge); ok {
+		r0 = returnFunc(ctx, tokenHash, tx...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*model.TwoFactorChallenge)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...*sql.Tx) error); ok {
+		r1 = returnFunc(ctx, tokenHash, tx...)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockTwoFactorDAO_GetLiveChallenge_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetLiveChallenge'
+type MockTwoFactorDAO_GetLiveChallenge_Call struct {
+	*mock.Call
+}
+
+// GetLiveChallenge is a helper method to define mock.On call
+//   - ctx context.Context
+//   - tokenHash string
+//   - tx ...*sql.Tx
+func (_e *MockTwoFactorDAO_Expecter) GetLiveChallenge(ctx any, tokenHash any, tx ...any) *MockTwoFactorDAO_GetLiveChallenge_Call {
+	return &MockTwoFactorDAO_GetLiveChallenge_Call{Call: _e.mock.On("GetLiveChallenge",
+		append([]any{ctx, tokenHash}, tx...)...)}
+}
+
+func (_c *MockTwoFactorDAO_GetLiveChallenge_Call) Run(run func(ctx context.Context, tokenHash string, tx ...*sql.Tx)) *MockTwoFactorDAO_GetLiveChallenge_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 []*sql.Tx
+		var variadicArgs []*sql.Tx
+		if len(args) > 2 {
+			variadicArgs = args[2].([]*sql.Tx)
+		}
+		arg2 = variadicArgs
+		run(
+			arg0,
+			arg1,
+			arg2...,
+		)
+	})
+	return _c
+}
+
+func (_c *MockTwoFactorDAO_GetLiveChallenge_Call) Return(twoFactorChallenge *model.TwoFactorChallenge, err error) *MockTwoFactorDAO_GetLiveChallenge_Call {
+	_c.Call.Return(twoFactorChallenge, err)
+	return _c
+}
+
+func (_c *MockTwoFactorDAO_GetLiveChallenge_Call) RunAndReturn(run func(ctx context.Context, tokenHash string, tx ...*sql.Tx) (*model.TwoFactorChallenge, error)) *MockTwoFactorDAO_GetLiveChallenge_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetTOTP provides a mock function for the type MockTwoFactorDAO
 func (_mock *MockTwoFactorDAO) GetTOTP(ctx context.Context, userID uuid.UUID, tx ...*sql.Tx) (*model.UserTOTP, error) {
 	var tmpRet mock.Arguments

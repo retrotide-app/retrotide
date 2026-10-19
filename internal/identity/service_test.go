@@ -926,8 +926,9 @@ func TestUnlink_BesideAPasswordSucceedsAuditsAndNotifies(t *testing.T) {
 	// given
 	svc, m := newSiteService(t)
 	account := newAccount(testOtherAddress, true)
-	key := spec.UserIdentityKey{UserID: account.ID, Provider: testProvider}
-	m.identities.EXPECT().Unlink(mock.Anything, key).Return(storedIdentity(account.ID, testAddress), nil)
+	removal := spec.UserIdentityRemoval{UserIdentityKey: spec.UserIdentityKey{UserID: account.ID, Provider: testProvider}, PasswordCounts: true}
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(true, nil)
+	m.identities.EXPECT().Unlink(mock.Anything, removal).Return(storedIdentity(account.ID, testAddress), nil)
 	m.userRepo.EXPECT().GetByID(mock.Anything, account.ID).Return(account, nil)
 	audits(m)
 	mails(m)
@@ -957,10 +958,38 @@ func TestUnlink_BesideAPasswordSucceedsAuditsAndNotifies(t *testing.T) {
 	assert.Contains(t, m.sent[0].HTML, `href="https://retrotide.test/forgot-password"`)
 }
 
+func TestUnlink_APasswordDoesNotCountAsAWayInWhilePasswordSignInIsOff(t *testing.T) {
+	// given
+	svc, m := newTestService(t)
+	userID := uuid.New()
+	removal := spec.UserIdentityRemoval{UserIdentityKey: spec.UserIdentityKey{UserID: userID, Provider: testProvider}, PasswordCounts: false}
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(false, nil)
+	m.identities.EXPECT().Unlink(mock.Anything, removal).Return(nil, fmt.Errorf("unlink: %w", dao.ErrLastSignInMethod))
+
+	// when
+	err := svc.Unlink(t.Context(), spec.IdentityUnlinking{UserID: userID, Provider: testProvider})
+
+	// then
+	require.ErrorIs(t, err, ErrLastSignInMethod)
+}
+
+func TestUnlink_FailsClosedWhenThePasswordSwitchCannotBeRead(t *testing.T) {
+	// given no unlink expectation, so removing the identity fails the test
+	svc, m := newTestService(t)
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(false, errDatabaseDown)
+
+	// when
+	err := svc.Unlink(t.Context(), spec.IdentityUnlinking{UserID: uuid.New(), Provider: testProvider})
+
+	// then
+	require.ErrorIs(t, err, errDatabaseDown)
+}
+
 func TestUnlink_RefusesTheLastWayToSignIn(t *testing.T) {
 	// given
 	svc, m := newTestService(t)
 	userID := uuid.New()
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(true, nil)
 	m.identities.EXPECT().Unlink(mock.Anything, mock.Anything).Return(nil, fmt.Errorf("unlink: %w", dao.ErrLastSignInMethod))
 
 	// when
@@ -973,6 +1002,7 @@ func TestUnlink_RefusesTheLastWayToSignIn(t *testing.T) {
 func TestUnlink_AnAccountWithoutThatIdentityIsNotFound(t *testing.T) {
 	// given
 	svc, m := newTestService(t)
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(true, nil)
 	m.identities.EXPECT().Unlink(mock.Anything, mock.Anything).Return(nil, fmt.Errorf("unlink: %w", dao.ErrNotFound))
 
 	// when
@@ -986,6 +1016,7 @@ func TestUnlink_AnAccountWithoutThatIdentityIsNotFound(t *testing.T) {
 func TestUnlink_ReportsAFailedUnlink(t *testing.T) {
 	// given
 	svc, m := newTestService(t)
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(true, nil)
 	m.identities.EXPECT().Unlink(mock.Anything, mock.Anything).Return(nil, errDatabaseDown)
 
 	// when
@@ -1001,6 +1032,7 @@ func TestUnlink_AFailedAuditStillSendsTheNotice(t *testing.T) {
 	// given
 	svc, m := newSiteService(t)
 	account := newAccount(testOtherAddress, true)
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(true, nil)
 	m.identities.EXPECT().Unlink(mock.Anything, mock.Anything).Return(storedIdentity(account.ID, testAddress), nil)
 	m.userRepo.EXPECT().GetByID(mock.Anything, account.ID).Return(account, nil)
 	m.auditLog.EXPECT().Create(mock.Anything, mock.Anything).Return(errDatabaseDown)
@@ -1020,6 +1052,7 @@ func TestUnlink_AFailedNoticeIsReported(t *testing.T) {
 	// given
 	svc, m := newSiteService(t)
 	account := newAccount(testOtherAddress, true)
+	m.settings.EXPECT().GetBool(mock.Anything, config.SettingAllowPasswordSignIn).Return(true, nil)
 	m.identities.EXPECT().Unlink(mock.Anything, mock.Anything).Return(storedIdentity(account.ID, testAddress), nil)
 	m.userRepo.EXPECT().GetByID(mock.Anything, account.ID).Return(account, nil)
 	audits(m)

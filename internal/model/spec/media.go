@@ -14,6 +14,8 @@ type (
 		Width   int
 		Height  int
 		Data    []byte
+
+		MaxStoredBytes int
 	}
 
 	MediaKey struct {

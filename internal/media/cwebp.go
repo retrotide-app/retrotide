@@ -16,18 +16,22 @@ import (
 
 type (
 	cwebpEncoder struct {
-		timeout time.Duration
+		timeout   time.Duration
+		queueWait time.Duration
+		slots     chan struct{}
 	}
 )
 
 const (
-	cwebpBinary  = "cwebp"
-	cwebpTimeout = 30 * time.Second
-	cwebpQuality = "80"
+	cwebpBinary      = "cwebp"
+	cwebpTimeout     = 30 * time.Second
+	cwebpQuality     = "80"
+	cwebpConcurrency = 2
+	cwebpQueueWait   = 10 * time.Second
 )
 
 func NewCWebPEncoder() Encoder {
-	return &cwebpEncoder{timeout: cwebpTimeout}
+	return &cwebpEncoder{timeout: cwebpTimeout, queueWait: cwebpQueueWait, slots: make(chan struct{}, cwebpConcurrency)}
 }
 
 func (e *cwebpEncoder) Encode(ctx context.Context, input []byte, maxEdge int) (*Encoded, error) {
@@ -40,6 +44,13 @@ func (e *cwebpEncoder) Encode(ctx context.Context, input []byte, maxEdge int) (*
 	if err != nil {
 		return nil, err
 	}
+
+	if err := e.acquire(ctx); err != nil {
+		return nil, err
+	}
+	defer func() {
+		<-e.slots
+	}()
 
 	inPath, err := writeTemp(ctx, input)
 	if err != nil {
@@ -76,6 +87,20 @@ func (e *cwebpEncoder) Encode(ctx context.Context, input []byte, maxEdge int) (*
 	}
 
 	return &Encoded{Data: data, Width: encodedWidth, Height: encodedHeight}, nil
+}
+
+func (e *cwebpEncoder) acquire(ctx context.Context) error {
+	wait := time.NewTimer(e.queueWait)
+	defer wait.Stop()
+
+	select {
+	case e.slots <- struct{}{}:
+		return nil
+	case <-wait.C:
+		return fmt.Errorf("%w: %d images are already being processed", ErrEncoderUnavailable, cap(e.slots))
+	case <-ctx.Done():
+		return fmt.Errorf("%w: waiting to process the image: %w", ErrEncoderUnavailable, ctx.Err())
+	}
 }
 
 func resizeArgs(width, height, maxEdge int) []string {

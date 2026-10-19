@@ -21,6 +21,7 @@ func TestPlanFor_FreeAllowsOneTeamAndTenMembers(t *testing.T) {
 		{limit: model.LimitMembers, want: 10},
 		{limit: model.LimitSavedTemplates, want: 3},
 		{limit: model.LimitCardImageBytes, want: 5242880},
+		{limit: model.LimitMediaBytes, want: 1073741824},
 	}
 
 	for _, tc := range tests {

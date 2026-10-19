@@ -15,4 +15,5 @@ const (
 	LimitMembers        Limit = "members"
 	LimitSavedTemplates Limit = "saved_templates"
 	LimitCardImageBytes Limit = "card_image_bytes"
+	LimitMediaBytes     Limit = "media_bytes"
 )

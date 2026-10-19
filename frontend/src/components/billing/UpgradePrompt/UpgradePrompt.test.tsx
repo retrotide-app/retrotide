@@ -4,13 +4,13 @@ import { renderWithProviders } from "../../../test-utils/render";
 import { UpgradePrompt } from "./UpgradePrompt";
 
 describe("UpgradePrompt", () => {
-    it("says what the plan allows and that paid plans are coming", () => {
+    it("says what the plan allows, and nothing about paid plans while pricing is hidden", () => {
         // when
         renderWithProviders(<UpgradePrompt upgrade={{ plan: "free", limit: "teams", allowed: 1 }} />);
 
         // then
         expect(screen.getByRole("alert")).toHaveTextContent("The free plan allows 1 team.");
-        expect(screen.getByRole("alert")).toHaveTextContent("Paid plans are coming. Until then, this limit stays.");
+        expect(screen.getByRole("alert")).not.toHaveTextContent("Paid plans");
     });
 
     it("names the members limit when the organisation is full", () => {

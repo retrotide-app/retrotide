@@ -82,6 +82,11 @@ func (h *twoFactorHarness) signInToWrite(userID uuid.UUID) *http.Cookie {
 	return cookie
 }
 
+func (h *twoFactorHarness) ownsChallenge(userID uuid.UUID) {
+	h.twoFactor.EXPECT().ChallengeOwner(mock.Anything, twoFactorChallengeToken).Return(userID, nil)
+	h.users.EXPECT().GetByID(mock.Anything, userID).Return(twoFactorAccount(userID), nil)
+}
+
 func twoFactorAccount(userID uuid.UUID) *dto.UserResponse {
 	return &dto.UserResponse{ID: userID, Email: twoFactorEmail, DisplayName: "Alice", HasPassword: true, CreatedAt: "2026-09-25T12:00:00Z"}
 }
@@ -362,9 +367,9 @@ func TestTwoFactorController_VerifyWithoutTheChallengeCookieAnswersExpired(t *te
 }
 
 func TestTwoFactorController_VerifyOfAnExpiredChallengeClearsTheCookie(t *testing.T) {
-	// given
+	// given a challenge that is gone before its owner can be found, so the strict mocks see no code checked
 	h := newTwoFactorHarness(t)
-	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, spec.TwoFactorVerification{ChallengeToken: twoFactorChallengeToken, Code: twoFactorCode}).Return(nil, fmt.Errorf("attempt: %w", twofactor.ErrChallengeExpired))
+	h.twoFactor.EXPECT().ChallengeOwner(mock.Anything, twoFactorChallengeToken).Return(uuid.Nil, fmt.Errorf("read: %w", twofactor.ErrChallengeExpired))
 
 	// when
 	rec := h.NewRequest(http.MethodPost, twoFactorVerifyPath).WithJSONBody(dto.TwoFactorCodeRequest{Code: twoFactorCode}).WithCookie(challengeCookie()).Record()
@@ -376,9 +381,43 @@ func TestTwoFactorController_VerifyOfAnExpiredChallengeClearsTheCookie(t *testin
 	assert.False(t, sessionCookieSet(rec, testutil.SessionCookieName))
 }
 
+func TestTwoFactorController_VerifyOfAChallengeThatExpiresWhileTheCodeIsCheckedClearsTheCookie(t *testing.T) {
+	// given
+	h := newTwoFactorHarness(t)
+	h.ownsChallenge(uuid.New())
+	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, spec.TwoFactorVerification{ChallengeToken: twoFactorChallengeToken, Code: twoFactorCode}).Return(nil, fmt.Errorf("attempt: %w", twofactor.ErrChallengeExpired))
+
+	// when
+	rec := h.NewRequest(http.MethodPost, twoFactorVerifyPath).WithJSONBody(dto.TwoFactorCodeRequest{Code: twoFactorCode}).WithCookie(challengeCookie()).Record()
+
+	// then
+	assert.Equal(t, http.StatusUnauthorized, rec.Code)
+	assertTwoFactorCookieCleared(t, rec)
+	assert.False(t, sessionCookieSet(rec, testutil.SessionCookieName))
+}
+
+func TestTwoFactorController_VerifyGuessesAreLimitedPerAccountAcrossSignIns(t *testing.T) {
+	// given one account's codes guessed from many addresses, each with a fresh sign-in
+	h := newTwoFactorHarness(t)
+	userID := uuid.New()
+	h.ownsChallenge(userID)
+	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, mock.Anything).Return(nil, twofactor.ErrInvalidCode)
+	for i := range middleware.CredentialAttemptsPerMinute {
+		rec := h.NewRequest(http.MethodPost, twoFactorVerifyPath).WithJSONBody(dto.TwoFactorCodeRequest{Code: "123456"}).WithCookie(challengeCookie()).WithRemoteAddr(fmt.Sprintf("198.51.100.%d:4444", i+1)).Record()
+		require.Equal(t, http.StatusBadRequest, rec.Code)
+	}
+
+	// when
+	rec := h.NewRequest(http.MethodPost, twoFactorVerifyPath).WithJSONBody(dto.TwoFactorCodeRequest{Code: "123456"}).WithCookie(challengeCookie()).WithRemoteAddr("203.0.113.9:4444").Record()
+
+	// then the account's own bucket refuses before the code is checked again
+	assert.Equal(t, http.StatusTooManyRequests, rec.Code)
+}
+
 func TestTwoFactorController_VerifyOfAWrongCodeKeepsTheChallenge(t *testing.T) {
 	// given
 	h := newTwoFactorHarness(t)
+	h.ownsChallenge(uuid.New())
 	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, mock.Anything).Return(nil, twofactor.ErrInvalidCode)
 
 	// when
@@ -393,6 +432,7 @@ func TestTwoFactorController_VerifyOfAWrongCodeKeepsTheChallenge(t *testing.T) {
 func TestTwoFactorController_VerifyRefusesABannedAccount(t *testing.T) {
 	// given
 	h := newTwoFactorHarness(t)
+	h.ownsChallenge(uuid.New())
 	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, mock.Anything).Return(nil, auth.ErrUserBanned)
 
 	// when
@@ -411,6 +451,7 @@ func TestTwoFactorController_VerifySignsInAndClearsTheChallengeCookie(t *testing
 	account := twoFactorAccount(userID)
 	verification := spec.TwoFactorVerification{ChallengeToken: twoFactorChallengeToken, Code: twoFactorCode, TrustDevice: true}
 	signedIn := auth.TwoFactorSignIn{User: *account, SessionToken: twoFactorSessionToken, Remember: true, TrustedDeviceToken: trustedDeviceToken, Location: twoFactorLocation}
+	h.ownsChallenge(userID)
 	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, verification).Return(&signedIn, nil)
 
 	// when
@@ -438,7 +479,9 @@ func TestTwoFactorController_VerifySignsInAndClearsTheChallengeCookie(t *testing
 func TestTwoFactorController_VerifyWithoutRememberMeOrTrustSetsOnlyABrowserSession(t *testing.T) {
 	// given
 	h := newTwoFactorHarness(t)
-	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, spec.TwoFactorVerification{ChallengeToken: twoFactorChallengeToken, Code: twoFactorCode}).Return(&auth.TwoFactorSignIn{User: *twoFactorAccount(uuid.New()), SessionToken: twoFactorSessionToken}, nil)
+	userID := uuid.New()
+	h.ownsChallenge(userID)
+	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, spec.TwoFactorVerification{ChallengeToken: twoFactorChallengeToken, Code: twoFactorCode}).Return(&auth.TwoFactorSignIn{User: *twoFactorAccount(userID), SessionToken: twoFactorSessionToken}, nil)
 
 	// when
 	rec := h.NewRequest(http.MethodPost, twoFactorVerifyPath).WithJSONBody(dto.TwoFactorVerifyRequest{Code: twoFactorCode}).WithCookie(challengeCookie()).Record()
@@ -455,6 +498,7 @@ func TestTwoFactorController_VerifyLeavesOutAnEmptyLocation(t *testing.T) {
 	// given a password sign-in, whose challenge stored no landing path
 	h := newTwoFactorHarness(t)
 	userID := uuid.New()
+	h.ownsChallenge(userID)
 	h.auth.EXPECT().CompleteTwoFactor(mock.Anything, mock.Anything).Return(&auth.TwoFactorSignIn{User: *twoFactorAccount(userID), SessionToken: twoFactorSessionToken}, nil)
 
 	// when

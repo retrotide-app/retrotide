@@ -1,3 +1,7 @@
+import { routeTemplate, UNKNOWN_ROUTE_TEMPLATE } from "../domain/routeTemplate";
+import type { ClientErrorReportRequest } from "../types/api";
+import { apiPost } from "./client";
+
 export type ClientErrorSource =
     | "uncaught"
     | "caught"
@@ -16,15 +20,8 @@ export type ClientErrorContext = {
     componentStack?: string | null;
 };
 
-export type ClientErrorReport = {
-    name: string;
-    message: string;
-    stack: string | null;
-    componentStack: string | null;
+export type ClientErrorReport = ClientErrorReportRequest & {
     source: ClientErrorSource;
-    pathname: string;
-    version: string;
-    sequence: number;
 };
 
 type ErrorFacts = {
@@ -33,11 +30,23 @@ type ErrorFacts = {
     stack: string | null;
 };
 
+type ShrinkableField = "name" | "message" | "stack" | "component_stack";
+
 export const CLIENT_ERROR_PREFIX = "[client-error]";
+
+export const CLIENT_ERROR_SEND_FAILED = "failed to send a client error report";
+
+export const CLIENT_ERRORS_PATH = "/client-errors";
 
 export const MAX_CLIENT_ERROR_REPORTS = 50;
 
+export const MAX_CLIENT_ERROR_REPORT_BYTES = 4096;
+
+const SHRINKABLE_FIELDS: readonly ShrinkableField[] = ["stack", "component_stack", "message", "name"];
+
 const UNKNOWN = "unknown";
+
+const encoder = new TextEncoder();
 
 let sent = 0;
 
@@ -65,12 +74,52 @@ function describeError(error: unknown): ErrorFacts {
     }
 }
 
-function currentPathname(): string {
-    return globalThis.location?.pathname ?? UNKNOWN;
+function currentRoute(): string {
+    const pathname = globalThis.location?.pathname;
+
+    if (pathname === undefined) {
+        return UNKNOWN_ROUTE_TEMPLATE;
+    }
+
+    return routeTemplate(pathname);
 }
 
 function appVersion(): string {
     return typeof __APP_VERSION__ === "string" ? __APP_VERSION__ : UNKNOWN;
+}
+
+function longestShrinkableField(report: ClientErrorReport): ShrinkableField | null {
+    let longest: ShrinkableField | null = null;
+    let longestLength = 0;
+
+    for (const field of SHRINKABLE_FIELDS) {
+        const length = report[field]?.length ?? 0;
+
+        if (length > longestLength) {
+            longest = field;
+            longestLength = length;
+        }
+    }
+
+    return longest;
+}
+
+function fitToBodyLimit(report: ClientErrorReport): ClientErrorReport {
+    let fitted = report;
+
+    while (encoder.encode(JSON.stringify(fitted)).length > MAX_CLIENT_ERROR_REPORT_BYTES) {
+        const field = longestShrinkableField(fitted);
+
+        if (field === null) {
+            return fitted;
+        }
+
+        const value = fitted[field] ?? "";
+
+        fitted = { ...fitted, [field]: value.slice(0, Math.floor(value.length / 2)) };
+    }
+
+    return fitted;
 }
 
 export function reportClientError(error: unknown, context: ClientErrorContext): void {
@@ -86,12 +135,16 @@ export function reportClientError(error: unknown, context: ClientErrorContext): 
         name: facts.name,
         message: facts.message,
         stack: facts.stack,
-        componentStack: context.componentStack ?? null,
+        component_stack: context.componentStack ?? null,
         source: context.source,
-        pathname: currentPathname(),
+        route: currentRoute(),
         version: appVersion(),
         sequence: sent,
     };
+
+    apiPost<void, ClientErrorReportRequest>(CLIENT_ERRORS_PATH, fitToBodyLimit(report)).catch((sendError: unknown) => {
+        console.error(CLIENT_ERROR_PREFIX, CLIENT_ERROR_SEND_FAILED, sendError);
+    });
 
     console.error(CLIENT_ERROR_PREFIX, report);
 }

@@ -36,6 +36,10 @@ WHERE user_id = $1 AND code_hash = $2 AND used_at IS NULL;
 INSERT INTO two_factor_challenges (token_hash, user_id, return_to, remember, expires_at)
 VALUES ($1, $2, $3, $4, $5);
 
+-- name: GetLiveTwoFactorChallenge :one
+SELECT * FROM two_factor_challenges
+WHERE token_hash = $1 AND expires_at > NOW();
+
 -- name: AttemptTwoFactorChallenge :one
 UPDATE two_factor_challenges
 SET attempts = attempts + 1

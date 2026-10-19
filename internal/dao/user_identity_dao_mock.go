@@ -215,7 +215,7 @@ func (_c *MockUserIdentityDAO_DeleteAllForUser_Call) RunAndReturn(run func(ctx c
 }
 
 // DeleteUnlessLast provides a mock function for the type MockUserIdentityDAO
-func (_mock *MockUserIdentityDAO) DeleteUnlessLast(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) error {
+func (_mock *MockUserIdentityDAO) DeleteUnlessLast(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) error {
 	var tmpRet mock.Arguments
 	if len(tx) > 0 {
 		tmpRet = _mock.Called(ctx, s, tx)
@@ -229,7 +229,7 @@ func (_mock *MockUserIdentityDAO) DeleteUnlessLast(ctx context.Context, s spec.U
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityKey, ...*sql.Tx) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityRemoval, ...*sql.Tx) error); ok {
 		r0 = returnFunc(ctx, s, tx...)
 	} else {
 		r0 = ret.Error(0)
@@ -244,22 +244,22 @@ type MockUserIdentityDAO_DeleteUnlessLast_Call struct {
 
 // DeleteUnlessLast is a helper method to define mock.On call
 //   - ctx context.Context
-//   - s spec.UserIdentityKey
+//   - s spec.UserIdentityRemoval
 //   - tx ...*sql.Tx
 func (_e *MockUserIdentityDAO_Expecter) DeleteUnlessLast(ctx any, s any, tx ...any) *MockUserIdentityDAO_DeleteUnlessLast_Call {
 	return &MockUserIdentityDAO_DeleteUnlessLast_Call{Call: _e.mock.On("DeleteUnlessLast",
 		append([]any{ctx, s}, tx...)...)}
 }
 
-func (_c *MockUserIdentityDAO_DeleteUnlessLast_Call) Run(run func(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx)) *MockUserIdentityDAO_DeleteUnlessLast_Call {
+func (_c *MockUserIdentityDAO_DeleteUnlessLast_Call) Run(run func(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx)) *MockUserIdentityDAO_DeleteUnlessLast_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 spec.UserIdentityKey
+		var arg1 spec.UserIdentityRemoval
 		if args[1] != nil {
-			arg1 = args[1].(spec.UserIdentityKey)
+			arg1 = args[1].(spec.UserIdentityRemoval)
 		}
 		var arg2 []*sql.Tx
 		var variadicArgs []*sql.Tx
@@ -281,7 +281,7 @@ func (_c *MockUserIdentityDAO_DeleteUnlessLast_Call) Return(err error) *MockUser
 	return _c
 }
 
-func (_c *MockUserIdentityDAO_DeleteUnlessLast_Call) RunAndReturn(run func(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) error) *MockUserIdentityDAO_DeleteUnlessLast_Call {
+func (_c *MockUserIdentityDAO_DeleteUnlessLast_Call) RunAndReturn(run func(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) error) *MockUserIdentityDAO_DeleteUnlessLast_Call {
 	_c.Call.Return(run)
 	return _c
 }

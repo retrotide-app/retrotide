@@ -182,6 +182,16 @@ func (s *Service) verifyTwoFactor(c *gin.Context) {
 		return
 	}
 
+	owner, err := s.TwoFactorService.ChallengeOwner(ctx, challengeToken)
+	if err != nil {
+		s.refuseTwoFactorVerification(c, err)
+		return
+	}
+
+	if !s.chargeTwoFactorAccount(c, owner, "failed to check the two-factor code") {
+		return
+	}
+
 	verification := spec.TwoFactorVerification{ChallengeToken: challengeToken, Code: req.Code, TrustDevice: req.TrustDevice}
 
 	verified, err := s.AuthService.CompleteTwoFactor(ctx, verification)

@@ -16,7 +16,7 @@ const (
 	bearerPrefix = "Bearer "
 )
 
-func metricsToken(settingsSvc settings.Service) gin.HandlerFunc {
+func metricsToken(settingsSvc settings.Service, mode config.DeploymentMode) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		expected, err := settingsSvc.Get(c.Request.Context(), config.SettingMetricsToken)
 		if err != nil {
@@ -24,7 +24,7 @@ func metricsToken(settingsSvc settings.Service) gin.HandlerFunc {
 			return
 		}
 
-		if expected == "" {
+		if expected == "" && mode != config.DeploymentSelfHosted {
 			return
 		}
 
@@ -37,7 +37,7 @@ func metricsToken(settingsSvc settings.Service) gin.HandlerFunc {
 			presented = c.GetHeader("X-Metrics-Token")
 		}
 
-		if subtle.ConstantTimeCompare([]byte(presented), []byte(expected)) == 1 {
+		if expected != "" && subtle.ConstantTimeCompare([]byte(presented), []byte(expected)) == 1 {
 			return
 		}
 

@@ -39,6 +39,7 @@ type (
 
 const (
 	freeAllowance = 5242880
+	freeStorage   = 1073741824
 )
 
 var (
@@ -51,7 +52,7 @@ var (
 	stamp    = time.Date(2026, 10, 12, 9, 0, 0, 0, time.UTC)
 
 	me       = model.Principal{Kind: model.PrincipalUser, ID: userID}
-	freePlan = &entitlements.Plan{Code: model.PlanFree, Limits: map[model.Limit]int{model.LimitCardImageBytes: freeAllowance}}
+	freePlan = &entitlements.Plan{Code: model.PlanFree, Limits: map[model.Limit]int{model.LimitCardImageBytes: freeAllowance, model.LimitMediaBytes: freeStorage}}
 	encoded  = []byte("RIFF-encoded-webp")
 )
 
@@ -137,7 +138,7 @@ func TestUpload_ReEncodesAPNGAndStoresItForTheBoard(t *testing.T) {
 	m.entitlements.EXPECT().For(mock.Anything, orgID).Return(freePlan, nil).Once()
 	upload := pngImage(t, 10, 8)
 	m.encoder.EXPECT().Encode(mock.Anything, upload, model.CardImageMaxEdge).Return(&Encoded{Data: encoded, Width: 10, Height: 8}, nil).Once()
-	m.media.EXPECT().Create(mock.Anything, spec.NewMedia{OrgID: orgID, BoardID: boardID, Kind: model.MediaKindCard, Width: 10, Height: 8, Data: encoded}).
+	m.media.EXPECT().Create(mock.Anything, spec.NewMedia{OrgID: orgID, BoardID: boardID, Kind: model.MediaKindCard, Width: 10, Height: 8, Data: encoded, MaxStoredBytes: freeStorage}).
 		Return(&model.Media{ID: mediaID, OrgID: orgID, BoardID: boardID, Kind: model.MediaKindCard, ContentType: model.MediaContentType, Width: 10, Height: 8, ByteSize: len(encoded), CreatedAt: stamp}, nil).Once()
 
 	// when
@@ -155,7 +156,7 @@ func TestUpload_CapsABackgroundAtItsOwnLongerEdge(t *testing.T) {
 	m.entitlements.EXPECT().For(mock.Anything, orgID).Return(freePlan, nil).Once()
 	upload := extendedWebP(5000, 2500)
 	m.encoder.EXPECT().Encode(mock.Anything, upload, model.BackgroundMaxEdge).Return(&Encoded{Data: encoded, Width: 2560, Height: 1280}, nil).Once()
-	m.media.EXPECT().Create(mock.Anything, spec.NewMedia{OrgID: orgID, BoardID: boardID, Kind: model.MediaKindBackground, Width: 2560, Height: 1280, Data: encoded}).
+	m.media.EXPECT().Create(mock.Anything, spec.NewMedia{OrgID: orgID, BoardID: boardID, Kind: model.MediaKindBackground, Width: 2560, Height: 1280, Data: encoded, MaxStoredBytes: freeStorage}).
 		Return(&model.Media{ID: mediaID, OrgID: orgID, BoardID: boardID, Kind: model.MediaKindBackground, Width: 2560, Height: 1280}, nil).Once()
 
 	// when
@@ -164,6 +165,41 @@ func TestUpload_CapsABackgroundAtItsOwnLongerEdge(t *testing.T) {
 	// then
 	require.NoError(t, err)
 	assert.Equal(t, 2560, got.Width)
+}
+
+func TestUpload_RefusesAnImageThatWouldTakeTheOrganisationOverItsStorage(t *testing.T) {
+	// given an organisation whose stored images already fill its plan
+	svc, m := newTestService(t)
+	m.live.EXPECT().Resolve(mock.Anything, mock.Anything).Return(boardAccess(model.BoardRoleParticipant), nil).Once()
+	m.entitlements.EXPECT().For(mock.Anything, orgID).Return(freePlan, nil).Once()
+	upload := pngImage(t, 10, 8)
+	m.encoder.EXPECT().Encode(mock.Anything, upload, model.CardImageMaxEdge).Return(&Encoded{Data: encoded, Width: 10, Height: 8}, nil).Once()
+	m.media.EXPECT().Create(mock.Anything, mock.Anything).Return(nil, fmt.Errorf("store: %w", dao.ErrQuotaExceeded)).Once()
+
+	// when
+	got, err := svc.Upload(t.Context(), uploadOf(model.MediaKindCard, upload))
+
+	// then
+	var denied *entitlements.DeniedError
+	require.ErrorAs(t, err, &denied)
+	assert.Equal(t, entitlements.DeniedError{Plan: model.PlanFree, Limit: model.LimitMediaBytes, Allowed: freeStorage, Current: freeStorage}, *denied)
+	assert.Nil(t, got)
+}
+
+func TestUpload_FailsOnAPlanWithoutAStorageAllowance(t *testing.T) {
+	// given a plan that names no storage allowance, so nothing is stored
+	svc, m := newTestService(t)
+	m.live.EXPECT().Resolve(mock.Anything, mock.Anything).Return(boardAccess(model.BoardRoleParticipant), nil).Once()
+	plan := &entitlements.Plan{Code: model.PlanFree, Limits: map[model.Limit]int{model.LimitCardImageBytes: freeAllowance}}
+	m.entitlements.EXPECT().For(mock.Anything, orgID).Return(plan, nil).Once()
+	upload := pngImage(t, 10, 8)
+	m.encoder.EXPECT().Encode(mock.Anything, upload, model.CardImageMaxEdge).Return(&Encoded{Data: encoded, Width: 10, Height: 8}, nil).Once()
+
+	// when
+	_, err := svc.Upload(t.Context(), uploadOf(model.MediaKindCard, upload))
+
+	// then
+	require.ErrorIs(t, err, entitlements.ErrUnknownLimit)
 }
 
 func TestUpload_RefusesAKindThatIsNeitherACardNorABackground(t *testing.T) {

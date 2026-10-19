@@ -284,6 +284,27 @@ func TestTwoFactorDAO_AnAttemptCarriesTheChallengeWhole(t *testing.T) {
 	assert.WithinDuration(t, challenge.ExpiresAt, got.ExpiresAt, time.Millisecond)
 }
 
+func TestTwoFactorDAO_GetLiveChallengeReadsWithoutSpendingAnAttempt(t *testing.T) {
+	// given a live challenge and an expired one
+	repos := daotest.NewRepos(t)
+	user := daotest.CreateUser(t, repos)
+	live := newChallenge(user.ID)
+	require.NoError(t, repos.TwoFactor.CreateChallenge(t.Context(), live))
+	expired := newChallenge(user.ID)
+	expired.ExpiresAt = time.Now().Add(-time.Second)
+	require.NoError(t, repos.TwoFactor.CreateChallenge(t.Context(), expired))
+
+	// when
+	got, err := repos.TwoFactor.GetLiveChallenge(t.Context(), live.TokenHash)
+	_, expiredErr := repos.TwoFactor.GetLiveChallenge(t.Context(), expired.TokenHash)
+
+	// then
+	require.NoError(t, err)
+	assert.Equal(t, user.ID, got.UserID)
+	assert.Zero(t, got.Attempts)
+	require.ErrorIs(t, expiredErr, dao.ErrNotFound)
+}
+
 func TestTwoFactorDAO_AChallengeKeepsTheRememberMeChoice(t *testing.T) {
 	// given
 	repos := daotest.NewRepos(t)

@@ -226,6 +226,7 @@ func TestPrivateSite_ClosesAnotherMethodOnAnExemptRoute(t *testing.T) {
 		{method: http.MethodDelete, path: "/api/v1/auth/session"},
 		{method: http.MethodPut, path: "/api/v1/auth/register"},
 		{method: http.MethodPut, path: "/api/v1/invites/register"},
+		{method: http.MethodGet, path: "/api/v1/client-errors"},
 	}
 
 	for _, tc := range tests {
@@ -262,6 +263,7 @@ func TestPrivateSite_ExemptsExactlyTheSignInRoutes(t *testing.T) {
 		"GET /api/v1/b/:slug",
 		"HEAD /api/v1/b/:slug",
 		"POST /api/v1/b/:slug/join",
+		"POST /api/v1/client-errors",
 		"POST /api/v1/invites/lookup",
 		"POST /api/v1/invites/register",
 		"GET /api/v1/site-info",
@@ -274,7 +276,7 @@ func TestPrivateSite_ExemptsExactlyTheSignInRoutes(t *testing.T) {
 		got = append(got, open.method+" "+open.route)
 	}
 
-	// then registration stays open for the first account, the service refuses it once one exists, someone invited to an organisation creates their account while accepting, someone signing in finishes their second factor, and a guest reaches a board's share link
+	// then registration stays open for the first account, the service refuses it once one exists, someone invited to an organisation creates their account while accepting, someone signing in finishes their second factor, a guest reaches a board's share link, and a signed-out visitor's crash still reaches the client error log
 	assert.Equal(t, want, got)
 }
 

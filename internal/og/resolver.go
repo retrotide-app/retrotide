@@ -36,6 +36,7 @@ type (
 		title       string
 		description string
 		robots      string
+		hidden      bool
 	}
 
 	resolver struct {
@@ -91,7 +92,7 @@ func (r *resolver) lookup(cleaned string) page {
 	}
 
 	index := slices.IndexFunc(marketingPages, func(candidate page) bool {
-		return len(candidate.path) == len(cleaned) && strings.EqualFold(candidate.path, cleaned)
+		return !candidate.hidden && len(candidate.path) == len(cleaned) && strings.EqualFold(candidate.path, cleaned)
 	})
 	if index >= 0 {
 		return marketingPages[index]

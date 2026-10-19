@@ -48,6 +48,29 @@ describe("imageRefusal", () => {
         expect(refusal).toBe("That image is larger than your plan allows. Images can be up to 5 MB.");
     });
 
+    it("says the organisation's image storage is full when that is the limit reached", () => {
+        // given
+        const error = Object.assign(
+            makeApiError({ status: 402, message: "upgrade required", code: "upgrade_required" }),
+            {
+                body: {
+                    error: "upgrade required",
+                    code: "upgrade_required",
+                    limit: "media_bytes",
+                    allowed: 1073741824,
+                    current: 1073741824,
+                    plan: "free",
+                },
+            },
+        );
+
+        // when
+        const refusal = imageRefusal(error);
+
+        // then
+        expect(refusal).toBe("Your organisation has used all 1 GB of image storage its plan allows.");
+    });
+
     it("still refuses an oversized upload whose limit the answer left out", () => {
         // given
         const error = makeApiError({ status: 402, message: "upgrade required", code: "upgrade_required" });

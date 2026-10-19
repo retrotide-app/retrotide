@@ -84,6 +84,7 @@ func (s *Service) GetAPIRoutes() []FRoute {
 	all = append(all, s.getAllTwoFactorRoutes()...)
 	all = append(all, s.getAllNotificationRoutes()...)
 	all = append(all, s.getAllSiteInfoRoutes()...)
+	all = append(all, s.getAllClientErrorRoutes()...)
 	all = append(all, s.getAllAdminRoutes()...)
 	all = append(all, s.getAllOrganisationRoutes()...)
 	all = append(all, s.getAllTeamRoutes()...)

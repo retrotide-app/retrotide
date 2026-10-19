@@ -22,6 +22,7 @@ var (
 				model.LimitMembers:        10,
 				model.LimitSavedTemplates: 3,
 				model.LimitCardImageBytes: 5242880,
+				model.LimitMediaBytes:     1073741824,
 			},
 		},
 	}

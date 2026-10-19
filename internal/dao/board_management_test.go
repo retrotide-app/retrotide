@@ -218,7 +218,7 @@ func TestBoard_SetSettingsChangesShowCardDatesAndLeavesItWhenUnset(t *testing.T)
 func TestBoard_SetBackgroundAttachesAndClearsAnImageOfTheBoard(t *testing.T) {
 	// given
 	f := newBoardFixture(t)
-	media, err := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindBackground, Width: 2560, Height: 1440, Data: []byte("webp")})
+	media, err := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindBackground, Width: 2560, Height: 1440, Data: []byte("webp"), MaxStoredBytes: testMediaStorage})
 	require.NoError(t, err)
 
 	// when

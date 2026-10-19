@@ -12,23 +12,27 @@ import (
 	"github.com/google/uuid"
 )
 
-const createMedia = `-- name: CreateMedia :one
+const createMediaWithinQuota = `-- name: CreateMediaWithinQuota :one
 INSERT INTO media (org_id, board_id, kind, width, height, byte_size, data)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+SELECT $1::uuid, $2::uuid, $3::text, $4::int, $5::int, $6::int, $7::bytea
+WHERE (
+    SELECT COALESCE(SUM(stored.byte_size), 0) FROM media AS stored WHERE stored.org_id = $1::uuid
+) + $6::int <= $8::bigint
 RETURNING media.id, media.org_id, media.board_id, media.kind, media.content_type, media.width, media.height, media.byte_size, media.created_at
 `
 
-type CreateMediaParams struct {
-	OrgID    uuid.UUID
-	BoardID  uuid.UUID
-	Kind     string
-	Width    int32
-	Height   int32
-	ByteSize int32
-	Data     []byte
+type CreateMediaWithinQuotaParams struct {
+	OrgID          uuid.UUID
+	BoardID        uuid.UUID
+	Kind           string
+	Width          int32
+	Height         int32
+	ByteSize       int32
+	Data           []byte
+	MaxStoredBytes int64
 }
 
-type CreateMediaRow struct {
+type CreateMediaWithinQuotaRow struct {
 	ID          uuid.UUID
 	OrgID       uuid.UUID
 	BoardID     uuid.UUID
@@ -40,8 +44,8 @@ type CreateMediaRow struct {
 	CreatedAt   time.Time
 }
 
-func (q *Queries) CreateMedia(ctx context.Context, arg CreateMediaParams) (CreateMediaRow, error) {
-	row := q.db.QueryRowContext(ctx, createMedia,
+func (q *Queries) CreateMediaWithinQuota(ctx context.Context, arg CreateMediaWithinQuotaParams) (CreateMediaWithinQuotaRow, error) {
+	row := q.db.QueryRowContext(ctx, createMediaWithinQuota,
 		arg.OrgID,
 		arg.BoardID,
 		arg.Kind,
@@ -49,8 +53,9 @@ func (q *Queries) CreateMedia(ctx context.Context, arg CreateMediaParams) (Creat
 		arg.Height,
 		arg.ByteSize,
 		arg.Data,
+		arg.MaxStoredBytes,
 	)
-	var i CreateMediaRow
+	var i CreateMediaWithinQuotaRow
 	err := row.Scan(
 		&i.ID,
 		&i.OrgID,

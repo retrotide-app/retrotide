@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { planAllowance } from "../../../domain/entitlements";
+import { PRICING_VISIBLE } from "../../../domain/marketing";
 import type { UpgradeRequiredResponse } from "../../../types/api";
 import styles from "./UpgradePrompt.module.css";
 
@@ -23,7 +24,7 @@ export function UpgradePrompt({ upgrade, takeFocus = false }: UpgradePromptProps
     return (
         <div ref={promptRef} role="alert" tabIndex={takeFocus ? -1 : undefined} className={styles.prompt}>
             <p className={styles.allowance}>{allowance}</p>
-            <p className={styles.note}>Paid plans are coming. Until then, this limit stays.</p>
+            {PRICING_VISIBLE && <p className={styles.note}>Paid plans are coming. Until then, this limit stays.</p>}
         </div>
     );
 }

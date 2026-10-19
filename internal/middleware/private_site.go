@@ -40,6 +40,7 @@ var (
 		{method: http.MethodGet, route: "/api/v1/b/:slug"}:                   {},
 		{method: http.MethodHead, route: "/api/v1/b/:slug"}:                  {},
 		{method: http.MethodPost, route: "/api/v1/b/:slug/join"}:             {},
+		{method: http.MethodPost, route: "/api/v1/client-errors"}:            {},
 	}
 )
 

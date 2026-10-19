@@ -21,9 +21,6 @@ const (
     <loc>https://retrotide.test/</loc>
   </url>
   <url>
-    <loc>https://retrotide.test/pricing</loc>
-  </url>
-  <url>
     <loc>https://retrotide.test/compare/easyretro</loc>
   </url>
   <url>
@@ -225,7 +222,7 @@ func TestSitemap_EscapesTheBaseURLForXML(t *testing.T) {
 
 	// then the document still parses and carries the url as written
 	require.NoError(t, err)
-	assert.Contains(t, string(body), "<loc>https://retrotide.test/a&amp;b/pricing</loc>")
+	assert.Contains(t, string(body), "<loc>https://retrotide.test/a&amp;b/compare/easyretro</loc>")
 
 	var parsed urlSet
 	require.NoError(t, xml.Unmarshal(body, &parsed))

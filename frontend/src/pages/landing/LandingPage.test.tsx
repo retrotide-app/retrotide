@@ -43,7 +43,7 @@ describe("LandingPage", () => {
         expect(screen.getByRole("figure", { name: "Example retro board" })).toBeInTheDocument();
     });
 
-    it("sends the hero's calls to action to sign up and to the prices", () => {
+    it("sends the hero's call to action to sign up, with no prices while pricing is hidden", () => {
         // given
         const ui = <LandingPage />;
 
@@ -53,10 +53,10 @@ describe("LandingPage", () => {
         // then
         const hero = within(screen.getByRole("region", { name: "Better sprint retrospectives for your team" }));
         expect(hero.getByRole("link", { name: "Start for free" })).toHaveAttribute("href", "/register");
-        expect(hero.getByRole("link", { name: "See pricing" })).toHaveAttribute("href", "#pricing");
+        expect(hero.queryByRole("link", { name: "See pricing" })).not.toBeInTheDocument();
     });
 
-    it("gives every section the header links to an anchor to land on", () => {
+    it("gives every section an anchor to land on, and shows no pricing section while pricing is hidden", () => {
         // given
         const ui = <LandingPage />;
 
@@ -65,8 +65,24 @@ describe("LandingPage", () => {
 
         // then
         expect(screen.getByRole("region", { name: "How it works" })).toHaveAttribute("id", "features");
-        expect(screen.getByRole("region", { name: "Pricing" })).toHaveAttribute("id", "pricing");
         expect(screen.getByRole("region", { name: "Host it yourself" })).toHaveAttribute("id", "self-hosting");
+        expect(screen.queryByRole("region", { name: "Pricing" })).not.toBeInTheDocument();
+    });
+
+    it("links the self-hosting section to the install page", () => {
+        // given
+        const ui = <LandingPage />;
+
+        // when
+        renderWithProviders(ui);
+
+        // then
+        const selfHosting = within(screen.getByRole("region", { name: "Host it yourself" }));
+        expect(selfHosting.getByRole("link", { name: "How to self-host RetroTide" })).toHaveAttribute(
+            "href",
+            "/self-host",
+        );
+        expect(selfHosting.getByText("Now")).toBeInTheDocument();
     });
 
     it("walks through a retro in order", () => {
@@ -82,30 +98,5 @@ describe("LandingPage", () => {
             .getAllByRole("heading", { level: 3 })
             .map(heading => heading.textContent);
         expect(steps).toEqual(["Create a board", "Add cards", "Vote", "Track actions", "Also on the free plan"]);
-    });
-
-    it("lists the plans in the pricing section", () => {
-        // given
-        const ui = <LandingPage />;
-
-        // when
-        renderWithProviders(ui);
-
-        // then
-        const pricing = screen.getByRole("region", { name: "Pricing" });
-        expect(within(pricing).getByRole("heading", { name: "Free" })).toBeInTheDocument();
-        expect(within(pricing).getByRole("heading", { name: "Enterprise" })).toBeInTheDocument();
-    });
-
-    it("links the pricing section to the full pricing page", () => {
-        // given
-        const ui = <LandingPage />;
-
-        // when
-        renderWithProviders(ui);
-
-        // then
-        const pricing = screen.getByRole("region", { name: "Pricing" });
-        expect(within(pricing).getByRole("link", { name: "See the full pricing" })).toHaveAttribute("href", "/pricing");
     });
 });

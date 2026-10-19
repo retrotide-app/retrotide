@@ -1,6 +1,9 @@
--- name: CreateMedia :one
+-- name: CreateMediaWithinQuota :one
 INSERT INTO media (org_id, board_id, kind, width, height, byte_size, data)
-VALUES (sqlc.arg(org_id), sqlc.arg(board_id), sqlc.arg(kind), sqlc.arg(width), sqlc.arg(height), sqlc.arg(byte_size), sqlc.arg(data))
+SELECT sqlc.arg(org_id)::uuid, sqlc.arg(board_id)::uuid, sqlc.arg(kind)::text, sqlc.arg(width)::int, sqlc.arg(height)::int, sqlc.arg(byte_size)::int, sqlc.arg(data)::bytea
+WHERE (
+    SELECT COALESCE(SUM(stored.byte_size), 0) FROM media AS stored WHERE stored.org_id = sqlc.arg(org_id)::uuid
+) + sqlc.arg(byte_size)::int <= sqlc.arg(max_stored_bytes)::bigint
 RETURNING media.id, media.org_id, media.board_id, media.kind, media.content_type, media.width, media.height, media.byte_size, media.created_at;
 
 -- name: GetMedia :one

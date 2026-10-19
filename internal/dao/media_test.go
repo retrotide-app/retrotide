@@ -13,10 +13,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	testMediaStorage = 1 << 30
+)
+
 func (f boardFixture) upload(t *testing.T, kind model.MediaKind, data []byte) *model.Media {
 	t.Helper()
 
-	created, err := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: kind, Width: 800, Height: 600, Data: data})
+	created, err := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: kind, Width: 800, Height: 600, Data: data, MaxStoredBytes: testMediaStorage})
 	require.NoError(t, err)
 
 	return created
@@ -52,6 +56,22 @@ func TestMedia_CreateStoresTheImageAndGetLeavesTheBytesBehind(t *testing.T) {
 	assert.Equal(t, data, opened.Data)
 }
 
+func TestMedia_CreateStopsAtTheOrganisationsStorageQuota(t *testing.T) {
+	// given an organisation that has already stored 6 of its 10 bytes
+	f := newBoardFixture(t)
+	_, err := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte("abcdef"), MaxStoredBytes: 10})
+	require.NoError(t, err)
+
+	// when
+	_, overErr := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte("ghijk"), MaxStoredBytes: 10})
+	exact, exactErr := f.repos.Media.Create(t.Context(), spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte("ghij"), MaxStoredBytes: 10})
+
+	// then an image that would go over is refused, and one that fills the quota exactly is stored
+	require.ErrorIs(t, overErr, dao.ErrQuotaExceeded)
+	require.NoError(t, exactErr)
+	assert.Equal(t, 4, exact.ByteSize)
+}
+
 func TestMedia_AnUnknownImageIsNotFound(t *testing.T) {
 	// given
 	f := newBoardFixture(t)
@@ -74,21 +94,21 @@ func TestMedia_TheSchemaRefusesAnUnknownKindAndOversizedDimensions(t *testing.T)
 		{
 			name: "an unknown kind",
 			media: func(f boardFixture) spec.NewMedia {
-				return spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: "avatar", Width: 1, Height: 1, Data: []byte("x")}
+				return spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: "avatar", Width: 1, Height: 1, Data: []byte("x"), MaxStoredBytes: testMediaStorage}
 			},
 			constraint: "media_kind_check",
 		},
 		{
 			name: "an edge beyond 4096",
 			media: func(f boardFixture) spec.NewMedia {
-				return spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 4097, Height: 1, Data: []byte("x")}
+				return spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 4097, Height: 1, Data: []byte("x"), MaxStoredBytes: testMediaStorage}
 			},
 			constraint: "media_dimensions_check",
 		},
 		{
 			name: "no bytes at all",
 			media: func(f boardFixture) spec.NewMedia {
-				return spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte{}}
+				return spec.NewMedia{OrgID: f.orgID(), BoardID: f.boardID(), Kind: model.MediaKindCard, Width: 1, Height: 1, Data: []byte{}, MaxStoredBytes: testMediaStorage}
 			},
 			constraint: "media_byte_size_check",
 		},

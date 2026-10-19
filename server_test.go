@@ -6,6 +6,7 @@ import (
 	"testing/fstest"
 
 	"retrotide/internal/authz"
+	"retrotide/internal/config"
 	"retrotide/internal/controllers"
 	"retrotide/internal/controllers/utils/testutil"
 	"retrotide/internal/health"
@@ -39,7 +40,7 @@ var (
 func newProductionEngine(t *testing.T, settingsSvc settings.Service) (*gin.Engine, *controllers.Service) {
 	t.Helper()
 
-	engine, err := utils.NewEngine(utils.DefaultTrustedProxies)
+	engine, err := utils.NewEngine(utils.DefaultTrustedProxies, config.DeploymentHosted)
 	require.NoError(t, err)
 
 	ctrl := &controllers.Service{
@@ -121,6 +122,7 @@ func TestInitApp_RouteTable(t *testing.T) {
 		"POST /api/v1/notifications/:id/read",
 		"GET /api/v1/site-info",
 		"HEAD /api/v1/site-info",
+		"POST /api/v1/client-errors",
 		"GET /api/v1/admin/users",
 		"HEAD /api/v1/admin/users",
 		"GET /api/v1/admin/users/:id",

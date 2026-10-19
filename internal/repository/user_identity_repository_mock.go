@@ -215,7 +215,7 @@ func (_c *MockUserIdentityRepository_DeleteAllForUser_Call) RunAndReturn(run fun
 }
 
 // DeleteUnlessLast provides a mock function for the type MockUserIdentityRepository
-func (_mock *MockUserIdentityRepository) DeleteUnlessLast(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) error {
+func (_mock *MockUserIdentityRepository) DeleteUnlessLast(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) error {
 	var tmpRet mock.Arguments
 	if len(tx) > 0 {
 		tmpRet = _mock.Called(ctx, s, tx)
@@ -229,7 +229,7 @@ func (_mock *MockUserIdentityRepository) DeleteUnlessLast(ctx context.Context, s
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityKey, ...*sql.Tx) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityRemoval, ...*sql.Tx) error); ok {
 		r0 = returnFunc(ctx, s, tx...)
 	} else {
 		r0 = ret.Error(0)
@@ -244,22 +244,22 @@ type MockUserIdentityRepository_DeleteUnlessLast_Call struct {
 
 // DeleteUnlessLast is a helper method to define mock.On call
 //   - ctx context.Context
-//   - s spec.UserIdentityKey
+//   - s spec.UserIdentityRemoval
 //   - tx ...*sql.Tx
 func (_e *MockUserIdentityRepository_Expecter) DeleteUnlessLast(ctx any, s any, tx ...any) *MockUserIdentityRepository_DeleteUnlessLast_Call {
 	return &MockUserIdentityRepository_DeleteUnlessLast_Call{Call: _e.mock.On("DeleteUnlessLast",
 		append([]any{ctx, s}, tx...)...)}
 }
 
-func (_c *MockUserIdentityRepository_DeleteUnlessLast_Call) Run(run func(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx)) *MockUserIdentityRepository_DeleteUnlessLast_Call {
+func (_c *MockUserIdentityRepository_DeleteUnlessLast_Call) Run(run func(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx)) *MockUserIdentityRepository_DeleteUnlessLast_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 spec.UserIdentityKey
+		var arg1 spec.UserIdentityRemoval
 		if args[1] != nil {
-			arg1 = args[1].(spec.UserIdentityKey)
+			arg1 = args[1].(spec.UserIdentityRemoval)
 		}
 		var arg2 []*sql.Tx
 		var variadicArgs []*sql.Tx
@@ -281,7 +281,7 @@ func (_c *MockUserIdentityRepository_DeleteUnlessLast_Call) Return(err error) *M
 	return _c
 }
 
-func (_c *MockUserIdentityRepository_DeleteUnlessLast_Call) RunAndReturn(run func(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) error) *MockUserIdentityRepository_DeleteUnlessLast_Call {
+func (_c *MockUserIdentityRepository_DeleteUnlessLast_Call) RunAndReturn(run func(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) error) *MockUserIdentityRepository_DeleteUnlessLast_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -702,7 +702,7 @@ func (_c *MockUserIdentityRepository_RegisterWithIdentity_Call) RunAndReturn(run
 }
 
 // Unlink provides a mock function for the type MockUserIdentityRepository
-func (_mock *MockUserIdentityRepository) Unlink(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) (*model.UserIdentity, error) {
+func (_mock *MockUserIdentityRepository) Unlink(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) (*model.UserIdentity, error) {
 	var tmpRet mock.Arguments
 	if len(tx) > 0 {
 		tmpRet = _mock.Called(ctx, s, tx)
@@ -717,17 +717,17 @@ func (_mock *MockUserIdentityRepository) Unlink(ctx context.Context, s spec.User
 
 	var r0 *model.UserIdentity
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityKey, ...*sql.Tx) (*model.UserIdentity, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityRemoval, ...*sql.Tx) (*model.UserIdentity, error)); ok {
 		return returnFunc(ctx, s, tx...)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityKey, ...*sql.Tx) *model.UserIdentity); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, spec.UserIdentityRemoval, ...*sql.Tx) *model.UserIdentity); ok {
 		r0 = returnFunc(ctx, s, tx...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*model.UserIdentity)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, spec.UserIdentityKey, ...*sql.Tx) error); ok {
+	if returnFunc, ok := ret.Get(1).(func(context.Context, spec.UserIdentityRemoval, ...*sql.Tx) error); ok {
 		r1 = returnFunc(ctx, s, tx...)
 	} else {
 		r1 = ret.Error(1)
@@ -742,22 +742,22 @@ type MockUserIdentityRepository_Unlink_Call struct {
 
 // Unlink is a helper method to define mock.On call
 //   - ctx context.Context
-//   - s spec.UserIdentityKey
+//   - s spec.UserIdentityRemoval
 //   - tx ...*sql.Tx
 func (_e *MockUserIdentityRepository_Expecter) Unlink(ctx any, s any, tx ...any) *MockUserIdentityRepository_Unlink_Call {
 	return &MockUserIdentityRepository_Unlink_Call{Call: _e.mock.On("Unlink",
 		append([]any{ctx, s}, tx...)...)}
 }
 
-func (_c *MockUserIdentityRepository_Unlink_Call) Run(run func(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx)) *MockUserIdentityRepository_Unlink_Call {
+func (_c *MockUserIdentityRepository_Unlink_Call) Run(run func(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx)) *MockUserIdentityRepository_Unlink_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 spec.UserIdentityKey
+		var arg1 spec.UserIdentityRemoval
 		if args[1] != nil {
-			arg1 = args[1].(spec.UserIdentityKey)
+			arg1 = args[1].(spec.UserIdentityRemoval)
 		}
 		var arg2 []*sql.Tx
 		var variadicArgs []*sql.Tx
@@ -779,7 +779,7 @@ func (_c *MockUserIdentityRepository_Unlink_Call) Return(userIdentity *model.Use
 	return _c
 }
 
-func (_c *MockUserIdentityRepository_Unlink_Call) RunAndReturn(run func(ctx context.Context, s spec.UserIdentityKey, tx ...*sql.Tx) (*model.UserIdentity, error)) *MockUserIdentityRepository_Unlink_Call {
+func (_c *MockUserIdentityRepository_Unlink_Call) RunAndReturn(run func(ctx context.Context, s spec.UserIdentityRemoval, tx ...*sql.Tx) (*model.UserIdentity, error)) *MockUserIdentityRepository_Unlink_Call {
 	_c.Call.Return(run)
 	return _c
 }

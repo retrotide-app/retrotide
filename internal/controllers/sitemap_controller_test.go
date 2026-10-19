@@ -86,7 +86,8 @@ func TestSitemapController_ServesTheSitemap(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Equal(t, "application/xml; charset=utf-8", rec.Header().Get("Content-Type"))
 	assert.True(t, strings.HasPrefix(body, `<?xml version="1.0" encoding="UTF-8"?>`))
-	assert.Contains(t, body, "<loc>https://retrotide.test/pricing</loc>")
+	assert.Contains(t, body, "<loc>https://retrotide.test/self-host</loc>")
+	assert.NotContains(t, body, "/pricing")
 	assert.Contains(t, body, "<loc>https://retrotide.test/templates/sailboat</loc>")
 	assert.NotContains(t, body, "/templates/blank")
 }

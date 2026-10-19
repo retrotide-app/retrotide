@@ -187,7 +187,7 @@ func initServer() (*http.Server, int, func(), error) {
 }
 
 func initApp(svc *services, repos *repository.Repositories, settingsSvc settings.Service) (*gin.Engine, *middleware.BodyLimit, error) {
-	engine, err := utils.NewEngine(utils.DefaultTrustedProxies)
+	engine, err := utils.NewEngine(utils.DefaultTrustedProxies, config.Cfg.DeploymentMode)
 	if err != nil {
 		return nil, nil, fmt.Errorf("build engine: %w", err)
 	}
@@ -217,7 +217,14 @@ func initApp(svc *services, repos *repository.Repositories, settingsSvc settings
 		return nil, nil, fmt.Errorf("install middleware: %w", err)
 	}
 
-	guards := middleware.NewGuards(middleware.GuardDeps{Settings: settingsSvc, Sessions: svc.sessions, Guests: svc.guests, Authz: svc.authz, OrgAuthz: svc.orgAuthz})
+	guards := middleware.NewGuards(middleware.GuardDeps{
+		Settings:       settingsSvc,
+		Sessions:       svc.sessions,
+		Guests:         svc.guests,
+		Authz:          svc.authz,
+		OrgAuthz:       svc.orgAuthz,
+		DeploymentMode: config.Cfg.DeploymentMode,
+	})
 
 	ctrl := &controllers.Service{
 		HealthService:        svc.health,

@@ -14,13 +14,13 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func tokenEngine(t *testing.T, configured string, readErr error) *gin.Engine {
+func tokenEngine(t *testing.T, mode config.DeploymentMode, configured string, readErr error) *gin.Engine {
 	t.Helper()
 
 	svc := settings.NewMockService(t)
 	svc.EXPECT().Get(mock.Anything, config.SettingMetricsToken).Return(configured, readErr).Maybe()
 
-	guards := NewGuards(GuardDeps{Settings: svc})
+	guards := NewGuards(GuardDeps{Settings: svc, DeploymentMode: mode})
 
 	engine := newTestEngine(t)
 	engine.GET("/metrics", guards.MetricsToken, func(c *gin.Context) {
@@ -43,7 +43,7 @@ func getWithToken(t *testing.T, engine *gin.Engine, path string, header string, 
 
 func TestRequireMetricsToken_OpenWhenNoTokenIsConfigured(t *testing.T) {
 	// given scraping must keep working until an operator opts in
-	engine := tokenEngine(t, "", nil)
+	engine := tokenEngine(t, config.DeploymentHosted, "", nil)
 
 	// when
 	status := getWithToken(t, engine, "/metrics", "", "")
@@ -52,9 +52,45 @@ func TestRequireMetricsToken_OpenWhenNoTokenIsConfigured(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 }
 
+func TestRequireMetricsToken_HiddenOnASelfHostedInstanceUntilATokenIsConfigured(t *testing.T) {
+	tests := []struct {
+		name   string
+		header string
+		value  string
+	}{
+		{name: "no credentials at all", header: "", value: ""},
+		{name: "an empty bearer", header: "Authorization", value: "Bearer "},
+		{name: "an empty metrics header", header: "X-Metrics-Token", value: ""},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// given a self-hosted instance, which has no proxy in front hiding its metrics
+			engine := tokenEngine(t, config.DeploymentSelfHosted, "", nil)
+
+			// when
+			status := getWithToken(t, engine, "/metrics", tc.header, tc.value)
+
+			// then
+			assert.Equal(t, http.StatusNotFound, status)
+		})
+	}
+}
+
+func TestRequireMetricsToken_ASelfHostedInstanceAcceptsItsConfiguredToken(t *testing.T) {
+	// given
+	engine := tokenEngine(t, config.DeploymentSelfHosted, "s3cret", nil)
+
+	// when
+	status := getWithToken(t, engine, "/metrics", "Authorization", "Bearer s3cret")
+
+	// then
+	assert.Equal(t, http.StatusOK, status)
+}
+
 func TestRequireMetricsToken_RefusesWhenTheTokenCannotBeRead(t *testing.T) {
 	// given
-	engine := tokenEngine(t, "", errors.New("db down"))
+	engine := tokenEngine(t, config.DeploymentHosted, "", errors.New("db down"))
 
 	// when
 	status := getWithToken(t, engine, "/metrics", "", "")
@@ -76,7 +112,7 @@ func TestRequireMetricsToken_AcceptsTheConfiguredToken(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// given
-			engine := tokenEngine(t, "s3cret", nil)
+			engine := tokenEngine(t, config.DeploymentHosted, "s3cret", nil)
 
 			// when
 			status := getWithToken(t, engine, "/metrics", tc.header, tc.value)
@@ -102,7 +138,7 @@ func TestRequireMetricsToken_HidesTheEndpointWithoutTheToken(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// given
-			engine := tokenEngine(t, "s3cret", nil)
+			engine := tokenEngine(t, config.DeploymentHosted, "s3cret", nil)
 
 			// when
 			status := getWithToken(t, engine, "/metrics", tc.header, tc.value)

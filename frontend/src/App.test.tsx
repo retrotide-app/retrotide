@@ -907,8 +907,16 @@ describe("App admin routes", () => {
 });
 
 describe("App marketing routes", () => {
+    it("hides the pricing page while pricing is hidden", () => {
+        // when
+        renderWithProviders(<App />, { route: "/pricing", siteInfo: { deployment_mode: "hosted" } });
+
+        // then
+        expect(screen.getByRole("heading", { name: "Not found page" })).toBeInTheDocument();
+        expect(screen.queryByRole("heading", { name: "Pricing page" })).not.toBeInTheDocument();
+    });
+
     const pages = [
-        { route: "/pricing", heading: "Pricing page" },
         { route: "/compare/easyretro", heading: "Compare EasyRetro page" },
         { route: "/self-host", heading: "Self-host page" },
         { route: "/templates", heading: "Templates page" },

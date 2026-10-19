@@ -446,7 +446,7 @@ func TestOrgController_ShowsThePlanAndItsLimits(t *testing.T) {
 
 	// then
 	require.Equal(t, http.StatusOK, rec.Code)
-	assert.JSONEq(t, `{"plan":"free","limits":{"teams":1,"members":10,"saved_templates":3,"card_image_bytes":5242880}}`, rec.Body.String())
+	assert.JSONEq(t, `{"plan":"free","limits":{"teams":1,"members":10,"saved_templates":3,"card_image_bytes":5242880,"media_bytes":1073741824}}`, rec.Body.String())
 }
 
 func TestOrgController_ReportsAPlanThatCannotBeRead(t *testing.T) {

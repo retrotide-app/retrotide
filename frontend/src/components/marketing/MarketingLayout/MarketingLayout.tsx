@@ -5,6 +5,7 @@ import {
     LEGAL_LINKS,
     legalPath,
     PRICING_PATH,
+    PRICING_VISIBLE,
     SELF_HOST_PATH,
     TEMPLATES_PATH,
 } from "../../../domain/marketing";
@@ -15,9 +16,11 @@ import styles from "./MarketingLayout.module.css";
 
 const COPYRIGHT_YEAR = new Date().getFullYear();
 
+const PRICING_LINKS = PRICING_VISIBLE ? [{ to: PRICING_PATH, label: "Pricing" }] : [];
+
 const SITE_LINKS = [
     { to: TEMPLATES_PATH, label: "Templates" },
-    { to: PRICING_PATH, label: "Pricing" },
+    ...PRICING_LINKS,
     { to: COMPARE_EASYRETRO_PATH, label: "Compare" },
     { to: SELF_HOST_PATH, label: "Self-host" },
 ];
@@ -27,7 +30,7 @@ const FOOTER_GROUPS = [
         heading: "Product",
         links: [
             { to: TEMPLATES_PATH, label: "Templates" },
-            { to: PRICING_PATH, label: "Pricing" },
+            ...PRICING_LINKS,
             { to: COMPARE_EASYRETRO_PATH, label: "Compare with EasyRetro" },
             { to: SELF_HOST_PATH, label: "Self-host" },
         ],

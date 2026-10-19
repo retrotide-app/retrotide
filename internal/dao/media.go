@@ -43,15 +43,19 @@ func toMedia(row sqlcgen.GetMediaRow) *model.Media {
 func (r *mediaDAO) Create(ctx context.Context, s spec.NewMedia, tx ...*sql.Tx) (*model.Media, error) {
 	action := fmt.Sprintf("store a %s image of %dx%d on board %s", s.Kind, s.Width, s.Height, s.BoardID)
 
-	row, err := sqlcgen.New(db.TxOrDB(r.db, tx)).CreateMedia(ctx, sqlcgen.CreateMediaParams{
-		OrgID:    s.OrgID,
-		BoardID:  s.BoardID,
-		Kind:     string(s.Kind),
-		Width:    clampInt32(s.Width),
-		Height:   clampInt32(s.Height),
-		ByteSize: clampInt32(len(s.Data)),
-		Data:     s.Data,
+	row, err := sqlcgen.New(db.TxOrDB(r.db, tx)).CreateMediaWithinQuota(ctx, sqlcgen.CreateMediaWithinQuotaParams{
+		OrgID:          s.OrgID,
+		BoardID:        s.BoardID,
+		Kind:           string(s.Kind),
+		Width:          clampInt32(s.Width),
+		Height:         clampInt32(s.Height),
+		ByteSize:       clampInt32(len(s.Data)),
+		Data:           s.Data,
+		MaxStoredBytes: int64(s.MaxStoredBytes),
 	})
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("%s: %w", action, ErrQuotaExceeded)
+	}
 	if isForeignKeyViolation(err) {
 		return nil, fmt.Errorf("%s: %w: %w", action, ErrNotFound, err)
 	}

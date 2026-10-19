@@ -17,7 +17,6 @@ func TestIndexablePaths_ListsTheMarketingPagesThenEveryPublicTemplate(t *testing
 	// then
 	assert.Equal(t, []string{
 		"/",
-		"/pricing",
 		"/compare/easyretro",
 		"/self-host",
 		"/templates",

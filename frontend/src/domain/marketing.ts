@@ -9,6 +9,8 @@ export interface LegalLink {
 
 export const PRICING_PATH = "/pricing";
 
+export const PRICING_VISIBLE = false;
+
 export const COMPARE_EASYRETRO_PATH = "/compare/easyretro";
 
 export const SELF_HOST_PATH = "/self-host";

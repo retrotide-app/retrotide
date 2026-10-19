@@ -7,7 +7,7 @@ export type AssignableOrgRole = Exclude<OrgRole, "owner">;
 
 export type PlanCode = "free";
 
-export type PlanLimit = "teams" | "members" | "saved_templates" | "card_image_bytes";
+export type PlanLimit = "teams" | "members" | "saved_templates" | "card_image_bytes" | "media_bytes";
 
 export interface CreateWorkspaceRequest {
     name: string;

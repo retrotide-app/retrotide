@@ -24,6 +24,12 @@ type (
 		Provider model.IdentityProvider
 	}
 
+	UserIdentityRemoval struct {
+		UserIdentityKey
+
+		PasswordCounts bool
+	}
+
 	IdentityRegistration struct {
 		User         NewUser
 		FirstAccount bool

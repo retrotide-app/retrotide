@@ -7,6 +7,7 @@ import (
 
 	"retrotide/internal/authctx"
 	"retrotide/internal/authz"
+	"retrotide/internal/config"
 	"retrotide/internal/dto"
 	"retrotide/internal/guest"
 	"retrotide/internal/model"
@@ -35,11 +36,12 @@ type (
 	}
 
 	GuardDeps struct {
-		Settings settings.Service
-		Sessions *session.Manager
-		Guests   *guest.Manager
-		Authz    authz.Service
-		OrgAuthz orgauthz.Service
+		Settings       settings.Service
+		Sessions       *session.Manager
+		Guests         *guest.Manager
+		Authz          authz.Service
+		OrgAuthz       orgauthz.Service
+		DeploymentMode config.DeploymentMode
 	}
 
 	userGuard struct {
@@ -48,6 +50,11 @@ type (
 	}
 
 	sessionState int
+
+	resolvedUser struct {
+		id    uuid.UUID
+		state sessionState
+	}
 
 	guardedRoute struct {
 		method string
@@ -68,6 +75,8 @@ const (
 
 	orgIDParam  = "orgID"
 	teamIDParam = "teamID"
+
+	resolvedUserKey = "middleware.resolved_user"
 )
 
 var (
@@ -90,7 +99,7 @@ func NewGuards(deps GuardDeps) *Guards {
 
 	return &Guards{
 		RateLimits:        NewRateLimits(),
-		MetricsToken:      metricsToken(deps.Settings),
+		MetricsToken:      metricsToken(deps.Settings, deps.DeploymentMode),
 		Auth:              users.require(),
 		OptionalAuth:      users.optional(),
 		Principal:         principals.require(),
@@ -248,6 +257,21 @@ func (g userGuard) optional() gin.HandlerFunc {
 }
 
 func (g userGuard) resolve(c *gin.Context) (uuid.UUID, sessionState) {
+	if held, found := c.Get(resolvedUserKey); found {
+		if resolved, ok := held.(resolvedUser); ok {
+			return resolved.id, resolved.state
+		}
+	}
+
+	userID, state := g.lookUp(c)
+	if state != sessionUnchecked {
+		c.Set(resolvedUserKey, resolvedUser{id: userID, state: state})
+	}
+
+	return userID, state
+}
+
+func (g userGuard) lookUp(c *gin.Context) (uuid.UUID, sessionState) {
 	ctx := c.Request.Context()
 
 	token, err := g.sessions.Token(c.Request)

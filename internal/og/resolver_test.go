@@ -30,7 +30,6 @@ func TestResolve_GivesEveryMarketingAndLegalPageItsOwnCopy(t *testing.T) {
 		title string
 	}{
 		{path: "/", title: "RetroTide: sprint retrospectives your team will use"},
-		{path: "/pricing", title: "Pricing | RetroTide"},
 		{path: "/compare/easyretro", title: "RetroTide and EasyRetro compared | RetroTide"},
 		{path: "/self-host", title: "Self-host RetroTide | RetroTide"},
 		{path: "/templates", title: "Retrospective templates | RetroTide"},
@@ -66,7 +65,7 @@ func TestResolve_MatchesMarketingPathsCaseInsensitively(t *testing.T) {
 		path      string
 		canonical string
 	}{
-		{path: "/PRICING", canonical: testBaseURL + "/pricing"},
+		{path: "/SELF-HOST", canonical: testBaseURL + "/self-host"},
 		{path: "/Legal/Privacy/", canonical: testBaseURL + "/legal/privacy"},
 		{path: "//compare//EasyRetro", canonical: testBaseURL + "/compare/easyretro"},
 		{path: "/Templates/", canonical: testBaseURL + "/templates"},
@@ -182,6 +181,18 @@ func TestResolve_KeepsTheDefaultMetaForEveryOtherPath(t *testing.T) {
 			assert.Equal(t, Meta{BaseURL: testBaseURL, Canonical: testBaseURL + path}, meta)
 		})
 	}
+}
+
+func TestResolve_ServesTheDefaultMetaForTheHiddenPricingPage(t *testing.T) {
+	// given
+	resolver := newTestResolver(t, config.DeploymentHosted, testBaseURL)
+
+	// when
+	meta, err := resolver.Resolve(t.Context(), "/pricing")
+
+	// then pricing is not described while it is hidden
+	require.NoError(t, err)
+	assert.Equal(t, Meta{BaseURL: testBaseURL, Canonical: testBaseURL + "/pricing"}, meta)
 }
 
 func TestResolve_ServesTheDefaultMetaForMarketingPathsWhenSelfHosted(t *testing.T) {

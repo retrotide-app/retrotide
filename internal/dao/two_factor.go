@@ -24,6 +24,7 @@ type (
 		CreateRecoveryCode(ctx context.Context, s spec.TwoFactorRecoveryCodeUse, tx ...*sql.Tx) error
 		UseRecoveryCode(ctx context.Context, s spec.TwoFactorRecoveryCodeUse, tx ...*sql.Tx) error
 		CreateChallenge(ctx context.Context, s spec.NewTwoFactorChallenge, tx ...*sql.Tx) error
+		GetLiveChallenge(ctx context.Context, tokenHash string, tx ...*sql.Tx) (*model.TwoFactorChallenge, error)
 		AttemptChallenge(ctx context.Context, s spec.TwoFactorChallengeAttempt, tx ...*sql.Tx) (*model.TwoFactorChallenge, error)
 		ConsumeChallenge(ctx context.Context, tokenHash string, tx ...*sql.Tx) (*model.TwoFactorChallenge, error)
 		CleanExpiredChallenges(ctx context.Context, tx ...*sql.Tx) (int64, error)
@@ -181,6 +182,18 @@ func (r *twoFactorDAO) CreateChallenge(ctx context.Context, s spec.NewTwoFactorC
 	}
 
 	return nil
+}
+
+func (r *twoFactorDAO) GetLiveChallenge(ctx context.Context, tokenHash string, tx ...*sql.Tx) (*model.TwoFactorChallenge, error) {
+	row, err := sqlcgen.New(db.TxOrDB(r.db, tx)).GetLiveTwoFactorChallenge(ctx, tokenHash)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, fmt.Errorf("get two-factor challenge: %w", ErrNotFound)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("get two-factor challenge: %w", err)
+	}
+
+	return toTwoFactorChallenge(row), nil
 }
 
 func (r *twoFactorDAO) AttemptChallenge(ctx context.Context, s spec.TwoFactorChallengeAttempt, tx ...*sql.Tx) (*model.TwoFactorChallenge, error) {

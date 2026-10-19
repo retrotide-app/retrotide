@@ -201,6 +201,7 @@ export type {
     MoveBoardRequest,
 } from "./boardManagement";
 export type { TemplateColumnResponse, TemplateListResponse, TemplateResponse } from "./boardTemplate";
+export type { ClientErrorReportRequest } from "./clientError";
 export type { ErrorResponse, UpgradeRequiredResponse } from "./error";
 export type { BoardExportFormat } from "./export";
 export type {

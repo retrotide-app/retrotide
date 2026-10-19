@@ -235,9 +235,17 @@ func (s *service) ListIdentities(ctx context.Context, userID uuid.UUID) (*dto.Id
 }
 
 func (s *service) Unlink(ctx context.Context, unlinking spec.IdentityUnlinking) error {
-	key := spec.UserIdentityKey{UserID: unlinking.UserID, Provider: unlinking.Provider}
+	passwordSignIn, err := s.settings.GetBool(ctx, config.SettingAllowPasswordSignIn)
+	if err != nil {
+		return fmt.Errorf("read whether password sign-in is on: %w", err)
+	}
 
-	removed, err := s.identities.Unlink(ctx, key)
+	removal := spec.UserIdentityRemoval{
+		UserIdentityKey: spec.UserIdentityKey{UserID: unlinking.UserID, Provider: unlinking.Provider},
+		PasswordCounts:  passwordSignIn,
+	}
+
+	removed, err := s.identities.Unlink(ctx, removal)
 	if errors.Is(err, dao.ErrNotFound) {
 		return fmt.Errorf("%w: %w", ErrIdentityNotFound, err)
 	}

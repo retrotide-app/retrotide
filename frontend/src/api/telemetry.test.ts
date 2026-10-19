@@ -1,13 +1,23 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+const { apiPost } = vi.hoisted(() => ({ apiPost: vi.fn() }));
+
+vi.mock("./client", () => ({ apiPost }));
+
 async function loadTelemetryModule(): Promise<typeof import("./telemetry")> {
     vi.resetModules();
 
     return import("./telemetry");
 }
 
+function sentBodies(): unknown[] {
+    return apiPost.mock.calls.map(([, body]) => body);
+}
+
 beforeEach(() => {
     vi.spyOn(console, "error").mockImplementation(() => {});
+    apiPost.mockReset();
+    apiPost.mockResolvedValue(undefined);
 });
 
 afterEach(() => {
@@ -28,7 +38,7 @@ describe("reportClientError", () => {
         expect(vi.mocked(console.error)).toHaveBeenCalledWith(CLIENT_ERROR_PREFIX, expect.anything());
     });
 
-    it("carries the error, the component stack, the path and the app version", async () => {
+    it("carries the error, the component stack, the route template and the app version", async () => {
         // given
         window.history.pushState({}, "", "/b/sprint-review");
         vi.stubGlobal("__APP_VERSION__", "7.3.2");
@@ -43,12 +53,130 @@ describe("reportClientError", () => {
             name: "TypeError",
             message: "cards is undefined",
             stack: error.stack ?? null,
-            componentStack: "\n    at RootErrorBoundary",
+            component_stack: "\n    at RootErrorBoundary",
             source: "caught",
-            pathname: "/b/sprint-review",
+            route: "/b/:slug",
             version: "7.3.2",
             sequence: 1,
         });
+    });
+
+    it("sends the same report to the client errors endpoint", async () => {
+        // given
+        window.history.pushState({}, "", "/o/harbour/boards/00000000-0000-4000-8000-0000000000b1");
+        const { CLIENT_ERRORS_PATH, reportClientError } = await loadTelemetryModule();
+        const error = new TypeError("cards is undefined");
+
+        // when
+        reportClientError(error, { source: "uncaught", componentStack: "\n    at BoardPage" });
+
+        // then
+        expect(CLIENT_ERRORS_PATH).toBe("/client-errors");
+        expect(apiPost).toHaveBeenCalledExactlyOnceWith(CLIENT_ERRORS_PATH, {
+            name: "TypeError",
+            message: "cards is undefined",
+            stack: error.stack ?? null,
+            component_stack: "\n    at BoardPage",
+            source: "uncaught",
+            route: "/o/:orgSlug/boards/:boardId",
+            version: "unknown",
+            sequence: 1,
+        });
+    });
+
+    it("never sends the concrete path, the query or the fragment of the page", async () => {
+        // given
+        window.history.pushState({}, "", "/b/sprint-review-a1b2c3?code=s3cret#cards");
+        const { reportClientError } = await loadTelemetryModule();
+
+        // when
+        reportClientError(new Error("the board failed to load"), { source: "uncaught" });
+
+        // then
+        const sent = JSON.stringify(sentBodies());
+        expect(sent).toContain('"route":"/b/:slug"');
+        expect(sent).not.toContain("sprint-review-a1b2c3");
+        expect(sent).not.toContain("s3cret");
+    });
+
+    it("sends unknown as the route of a page the app has no route for", async () => {
+        // given
+        window.history.pushState({}, "", "/no-such-page/a1b2c3");
+        const { reportClientError } = await loadTelemetryModule();
+
+        // when
+        reportClientError(new Error("lost"), { source: "uncaught" });
+
+        // then
+        expect(sentBodies()).toEqual([expect.objectContaining({ route: "unknown" })]);
+    });
+
+    it("shrinks a report that would not fit the endpoint's body limit, and keeps it whole on the console", async () => {
+        // given
+        const { CLIENT_ERROR_PREFIX, MAX_CLIENT_ERROR_REPORT_BYTES, reportClientError } = await loadTelemetryModule();
+        const error = new Error("€".repeat(2000));
+        error.stack = "at frame\n".repeat(2000);
+
+        // when
+        reportClientError(error, { source: "caught", componentStack: "\n    at Card".repeat(500) });
+
+        // then
+        const [body] = sentBodies();
+        expect(new TextEncoder().encode(JSON.stringify(body)).length).toBeLessThanOrEqual(
+            MAX_CLIENT_ERROR_REPORT_BYTES,
+        );
+        expect(body).toEqual(expect.objectContaining({ name: "Error", source: "caught", sequence: 1 }));
+        expect(vi.mocked(console.error)).toHaveBeenCalledWith(
+            CLIENT_ERROR_PREFIX,
+            expect.objectContaining({ message: error.message, stack: error.stack }),
+        );
+    });
+
+    it("sends a report that fits the body limit untouched", async () => {
+        // given
+        const { reportClientError } = await loadTelemetryModule();
+        const error = new Error("a".repeat(1000));
+        error.stack = "Error: aaa\n    at Board (index-a1b2c3.js:1:2)";
+
+        // when
+        reportClientError(error, { source: "caught" });
+
+        // then
+        expect(sentBodies()).toEqual([expect.objectContaining({ message: error.message, stack: error.stack })]);
+    });
+
+    it("writes a failed send to the console once and never reports it as a client error", async () => {
+        // given
+        const { CLIENT_ERROR_PREFIX, CLIENT_ERROR_SEND_FAILED, reportClientError } = await loadTelemetryModule();
+        const failure = new Error("too many requests, please try again later");
+        apiPost.mockRejectedValue(failure);
+
+        // when
+        reportClientError(new Error("boom"), { source: "uncaught" });
+
+        // then
+        await vi.waitFor(() => {
+            expect(vi.mocked(console.error)).toHaveBeenCalledWith(
+                CLIENT_ERROR_PREFIX,
+                CLIENT_ERROR_SEND_FAILED,
+                failure,
+            );
+        });
+        expect(apiPost).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(console.error)).toHaveBeenCalledTimes(2);
+    });
+
+    it("stops sending to the endpoint once the session cap is reached", async () => {
+        // given
+        const { MAX_CLIENT_ERROR_REPORTS, reportClientError } = await loadTelemetryModule();
+
+        // when
+        for (let i = 0; i < MAX_CLIENT_ERROR_REPORTS + 5; i += 1) {
+            reportClientError(new Error(`render loop ${i}`), { source: "recoverable" });
+        }
+
+        // then
+        expect(apiPost).toHaveBeenCalledTimes(MAX_CLIENT_ERROR_REPORTS);
     });
 
     it("says the version is unknown when the build stamped none", async () => {
@@ -75,7 +203,7 @@ describe("reportClientError", () => {
         // then
         expect(vi.mocked(console.error)).toHaveBeenCalledWith(
             CLIENT_ERROR_PREFIX,
-            expect.objectContaining({ componentStack: null }),
+            expect.objectContaining({ component_stack: null }),
         );
     });
 

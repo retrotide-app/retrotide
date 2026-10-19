@@ -3,6 +3,7 @@ package media
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"image"
 	_ "image/jpeg"
@@ -12,6 +13,7 @@ import (
 
 	"retrotide/internal/board/policy"
 	"retrotide/internal/board/projection"
+	"retrotide/internal/dao"
 	"retrotide/internal/dto"
 	"retrotide/internal/entitlements"
 	"retrotide/internal/model"
@@ -81,14 +83,23 @@ func (s *service) Upload(ctx context.Context, command UploadCommand) (*dto.Media
 		return nil, fmt.Errorf("%w: the re-encoded image is %dx%d", ErrImageDimensions, encoded.Width, encoded.Height)
 	}
 
+	storable, known := plan.Allowance(model.LimitMediaBytes)
+	if !known {
+		return nil, fmt.Errorf("%w: %q on the %s plan", entitlements.ErrUnknownLimit, model.LimitMediaBytes, plan.Code)
+	}
+
 	stored, err := s.media.Create(ctx, spec.NewMedia{
-		OrgID:   access.Header.OrgID,
-		BoardID: access.Header.ID,
-		Kind:    command.Kind,
-		Width:   encoded.Width,
-		Height:  encoded.Height,
-		Data:    encoded.Data,
+		OrgID:          access.Header.OrgID,
+		BoardID:        access.Header.ID,
+		Kind:           command.Kind,
+		Width:          encoded.Width,
+		Height:         encoded.Height,
+		Data:           encoded.Data,
+		MaxStoredBytes: storable,
 	})
+	if errors.Is(err, dao.ErrQuotaExceeded) {
+		return nil, &entitlements.DeniedError{Plan: plan.Code, Limit: model.LimitMediaBytes, Allowed: storable, Current: storable}
+	}
 	if err != nil {
 		return nil, fmt.Errorf("store the %s image for board %s: %w", command.Kind, access.Header.ID, err)
 	}

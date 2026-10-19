@@ -556,6 +556,46 @@ func TestDisable_RefusesAUsedOrUnknownRecoveryCode(t *testing.T) {
 	assert.ErrorIs(t, err, ErrInvalidCode)
 }
 
+func TestChallengeOwner_AnswersWhoseSignInTheChallengeHolds(t *testing.T) {
+	// given
+	svc, m := newTestService(t)
+	userID := uuid.New()
+	m.twoFactor.EXPECT().GetLiveChallenge(mock.Anything, token.Hash(testChallenge)).Return(challengeFor(userID, 2), nil)
+
+	// when
+	got, err := svc.ChallengeOwner(t.Context(), testChallenge)
+
+	// then no attempt is spent, which the strict mock would report
+	require.NoError(t, err)
+	assert.Equal(t, userID, got)
+}
+
+func TestChallengeOwner_AnUnknownOrExpiredChallengeHasExpired(t *testing.T) {
+	// given
+	svc, m := newTestService(t)
+	m.twoFactor.EXPECT().GetLiveChallenge(mock.Anything, mock.Anything).Return(nil, errLookupNotFound)
+
+	// when
+	got, err := svc.ChallengeOwner(t.Context(), testChallenge)
+
+	// then
+	require.ErrorIs(t, err, ErrChallengeExpired)
+	assert.Equal(t, uuid.Nil, got)
+}
+
+func TestChallengeOwner_PassesAStoreFailureOn(t *testing.T) {
+	// given
+	svc, m := newTestService(t)
+	m.twoFactor.EXPECT().GetLiveChallenge(mock.Anything, mock.Anything).Return(nil, errDatabaseDown)
+
+	// when
+	_, err := svc.ChallengeOwner(t.Context(), testChallenge)
+
+	// then
+	require.ErrorIs(t, err, errDatabaseDown)
+	assert.NotErrorIs(t, err, ErrChallengeExpired)
+}
+
 func TestVerify_RefusesAnUnknownExpiredOrUsedUpChallenge(t *testing.T) {
 	// given
 	svc, m := newTestService(t)
