@@ -5,6 +5,16 @@ on:
     workflows: [CI]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy to
+        required: true
+        type: environment
+      release:
+        description: Commit to deploy, already built by CI (empty means the latest commit on main)
+        required: false
+        type: string
 
 permissions: {}
 
@@ -20,7 +30,6 @@ jobs:
       packages: write
     outputs:
       sha: ${{ steps.release.outputs.sha }}
-      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -63,6 +72,7 @@ jobs:
   staging:
     needs: build
     runs-on: ubuntu-latest
+    environment: staging
     concurrency:
       group: deploy-staging
       cancel-in-progress: false
@@ -70,7 +80,7 @@ jobs:
       contents: read
     env:
       RELEASE_SHA: ${{ needs.build.outputs.sha }}
-      STACK_DIR: ${{ secrets.STAGING_STACK_DIR }}
+      STACK_DIR: ${{ secrets.STACK_DIR }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -100,23 +110,69 @@ jobs:
           envs: STACK_DIR,RELEASE_SHA
           script: bash "$STACK_DIR/releases/$RELEASE_SHA/deploy/deploy.sh" "$STACK_DIR" "$RELEASE_SHA"
 
-  production:
-    needs: [build, staging]
+  release:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ inputs.environment }}
     concurrency:
-      group: deploy-production
+      group: deploy-${{ inputs.environment }}
       cancel-in-progress: false
     permissions:
       contents: read
+      packages: read
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+      version: ${{ steps.release.outputs.version }}
     env:
-      RELEASE_SHA: ${{ needs.build.outputs.sha }}
-      STACK_DIR: ${{ secrets.PRODUCTION_STACK_DIR }}
+      STACK_DIR: ${{ secrets.STACK_DIR }}
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ needs.build.outputs.sha }}
+          fetch-depth: 0
           persist-credentials: false
+
+      - name: Work out the release to deploy
+        id: release
+        env:
+          REQUESTED: ${{ inputs.release }}
+          LATEST: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          wanted="${REQUESTED:-$LATEST}"
+          if [[ ! "$wanted" =~ ^[0-9a-f]{7,40}$ ]]; then
+            echo "::error::'$wanted' is not a commit SHA"
+            exit 1
+          fi
+          if ! sha="$(git rev-parse --verify --quiet "${wanted}^{commit}")"; then
+            echo "::error::there is no commit $wanted"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$sha" origin/main; then
+            echo "::error::$sha is not on main"
+            exit 1
+          fi
+          git checkout --quiet --detach "$sha"
+          version="$(git describe --tags --match 'v*' --always "$sha")"
+          echo "Deploying $sha as $version"
+          echo "RELEASE_SHA=$sha" >> "$GITHUB_ENV"
+          {
+            echo "sha=$sha"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check the release was built
+        run: |
+          set -euo pipefail
+          if ! docker manifest inspect "$IMAGE:$RELEASE_SHA" > /dev/null; then
+            echo "::error::$IMAGE:$RELEASE_SHA does not exist; wait for CI and the build to finish on main"
+            exit 1
+          fi
 
       - name: Copy the release to the server
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345
@@ -142,13 +198,14 @@ jobs:
           script: bash "$STACK_DIR/releases/$RELEASE_SHA/deploy/deploy.sh" "$STACK_DIR" "$RELEASE_SHA"
 
   tag-production:
-    needs: [build, production]
+    needs: release
+    if: ${{ inputs.environment == 'production' }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
     env:
-      RELEASE_SHA: ${{ needs.build.outputs.sha }}
-      RELEASE_VERSION: ${{ needs.build.outputs.version }}
+      RELEASE_SHA: ${{ needs.release.outputs.sha }}
+      RELEASE_VERSION: ${{ needs.release.outputs.version }}
     steps:
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
