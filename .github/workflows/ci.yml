@@ -48,13 +48,8 @@ jobs:
       - name: Check CSS tokens
         run: node scripts/check-css-tokens.mjs
 
-      - name: Report the runner's cores and memory
-        run: |
-          nproc
-          free -m
-
       - name: Test
-        run: npm run test:coverage -- --logHeapUsage
+        run: npm run test:coverage
 
       - name: Build frontend
         run: npm run build
