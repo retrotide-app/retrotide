@@ -81,6 +81,7 @@ describe("AdminSettingsPage", () => {
             "General",
             "Accounts",
             "Google sign-in",
+            "Microsoft sign-in",
             "Turnstile",
             "DroneBL",
             "Email",

@@ -366,7 +366,7 @@ describe("InviteSignUp when the server refuses", () => {
         expect(screen.getByRole("alert")).toHaveTextContent("This invite is for a different email address.");
     });
 
-    it("says paid plans are coming when the organisation is at its member limit", () => {
+    it("names the plan's limit, without paid plans while pricing is hidden, when the organisation is at its member limit", () => {
         // given
         const failure = makeUpgradeRequiredError({ limit: "members", allowed: 10, current: 10 });
         useRegisterThroughInvite.mockReturnValue(refused(failure));
@@ -378,7 +378,7 @@ describe("InviteSignUp when the server refuses", () => {
         const alerts = screen.getAllByRole("alert");
         expect(alerts).toHaveLength(1);
         expect(alerts[0]).toHaveTextContent("The free plan allows 10 members.");
-        expect(alerts[0]).toHaveTextContent("Paid plans are coming. Until then, this limit stays.");
+        expect(alerts[0]).not.toHaveTextContent("Paid plans");
         expect(alerts[0]).toHaveFocus();
         expect(screen.getByText(/has reached its plan's limit/)).toHaveTextContent(
             "Harbour has reached its plan's limit. Ask the person who invited you.",

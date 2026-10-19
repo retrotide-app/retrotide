@@ -248,7 +248,7 @@ describe("EmailInviteForm", () => {
         expect(screen.getByLabelText("Email address")).not.toHaveAttribute("aria-invalid");
     });
 
-    it("says paid plans are coming when the plan allows no more members", () => {
+    it("names the plan's limit, without paid plans while pricing is hidden, when the plan allows no more members", () => {
         // given
         const error = makeUpgradeRequiredError({ limit: "members", allowed: 10, current: 10 });
         useCreateInvite.mockReturnValue(makeMutationState({ isError: true, error }));
@@ -258,6 +258,6 @@ describe("EmailInviteForm", () => {
 
         // then
         expect(screen.getByRole("alert")).toHaveTextContent("The free plan allows 10 members.");
-        expect(screen.getByRole("alert")).toHaveTextContent("Paid plans are coming.");
+        expect(screen.getByRole("alert")).not.toHaveTextContent("Paid plans");
     });
 });

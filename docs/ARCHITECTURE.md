@@ -919,7 +919,7 @@ The backend, as it stands after M0:
 
   scripts/              regen_sqlc.sh, regen_mocks.sh, test.sh, check-links.mjs, loadtest/
   deploy/               deploy.sh, backup.sh, restore.sh, systemd/, Caddyfile.example, postgres/ (the init script that creates the database roles)
-  .github/              ci.yml and deploy.yml, CODEOWNERS, dependabot.yml
+  .github/              ci.yml and deploy.yml, CODEOWNERS
 ```
 
 The packages still to come, by milestone: `session`, `token`, `cookie`, `authz`, `identity` (the provider-neutral core, with one adapter subpackage per provider, `google/` first), `user`, `email`, `notification` and `admin` in M3; `org`, `team`, `orgauthz` and `entitlements` in M4; `board` (with `policy/` and `projection/`), `fracindex` and `boardtemplate` in M5; `ws` in M6; `guest` in M7; `actionitem` in M10; `export` in M11; `og` and `sitemap` in M12; the board timer registry in `board` in M12a; `media`, `surveytemplate` and the board sub-services `cardpolish/`, `images/`, `management/` and `surveys/` in M12b; `twofactor`, `savedtemplate` and the `identity/microsoft/` adapter in M12c; `worker` and `integration` in M14; and `billing` (with `stripe/`) in M16. The frontend arrives in M1 under `frontend/`, and its directories are the layers of section 4.1, with `oxlint.layers.ts` spelling each layer as a glob.
