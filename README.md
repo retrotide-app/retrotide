@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="frontend/public/logo-dark.png">
+    <img src="frontend/public/logo.png" alt="RetroTide" width="320">
+  </picture>
+</p>
+
 # RetroTide
 
 A sprint retrospective tool. Teams run a board of columns and cards, write cards, vote on them, talk them through, and carry the actions they agree into the next retro.
