@@ -27,9 +27,9 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/testcontainers/testcontainers-go v0.44.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.44.0
-	github.com/valkey-io/valkey-go v1.0.78
-	github.com/valkey-io/valkey-go/mock v1.0.78
-	github.com/valkey-io/valkey-go/valkeyhook v1.0.78
+	github.com/valkey-io/valkey-go v1.0.79
+	github.com/valkey-io/valkey-go/mock v1.0.79
+	github.com/valkey-io/valkey-go/valkeyhook v1.0.79
 	github.com/wneessen/go-mail v0.8.1
 	go.opentelemetry.io/otel v1.46.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.46.0
