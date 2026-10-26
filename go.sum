@@ -330,10 +330,10 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.3.1 h1:waO7eEiFDwidsBN6agj1vJQ4AG7lh2yqXyOXqhgQuyY=
 github.com/ugorji/go/codec v1.3.1/go.mod h1:pRBVtBSKl77K30Bv8R2P+cLSGaTtex6fsA2Wjqmfxj4=
-github.com/valkey-io/valkey-go v1.0.78 h1:1Ce8hRaaNXpKfqmqZQRhnbVh1eW8MGR873pdXVvE4y8=
-github.com/valkey-io/valkey-go v1.0.78/go.mod h1:gvC/r2m3eW4Hbj0YnjogTzNtFdPSM/D+NCqen+5OABM=
-github.com/valkey-io/valkey-go/mock v1.0.78 h1:hIlrQGefpVc9jfWOevpKkOi+s3Cj6qy7k0smUaYJYtQ=
-github.com/valkey-io/valkey-go/mock v1.0.78/go.mod h1:yycIFWWScdOTmg45pgSNAsIbYLRhx9ghmbrIqE7s3VE=
+github.com/valkey-io/valkey-go v1.0.79 h1:dryzYka/oOkSMOcNmOTjQI8zfu/4bUzDZNnFW9NlqNM=
+github.com/valkey-io/valkey-go v1.0.79/go.mod h1:gvC/r2m3eW4Hbj0YnjogTzNtFdPSM/D+NCqen+5OABM=
+github.com/valkey-io/valkey-go/mock v1.0.79 h1:6oWOiUyoIVCSlt0KjaOvF5cEntEAW0McRX5B/UasDOA=
+github.com/valkey-io/valkey-go/mock v1.0.79/go.mod h1:/YYjs1rrpnWvTIi2uMtiUAUlA+YQXzf6/CZzVywRhgE=
 github.com/valkey-io/valkey-go/valkeyhook v1.0.78 h1:eqCHvCJtLo6tgZeJV4ZGMpa8nmFoX7IRHKzQI/tLPbk=
 github.com/valkey-io/valkey-go/valkeyhook v1.0.78/go.mod h1:it3X1DVkiRZThzMl4eY3f7smG3JYaOeanD3hW6WtLJ0=
 github.com/vektra/mockery/v3 v3.8.0 h1:Tklqcx844iV8GtYziqJXam1a8RdcKip4UErMa66Nxps=
