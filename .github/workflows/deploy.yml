@@ -71,6 +71,7 @@ jobs:
 
   staging:
     needs: build
+    if: ${{ vars.DEPLOY_STAGING == 'true' }}
     runs-on: ubuntu-latest
     environment: staging
     concurrency:

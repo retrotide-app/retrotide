@@ -1,6 +1,7 @@
 name: retrotide
 
 x-settings:
+  port: &port "8080"
   site-address: &site-address http://localhost:8080
   site-mode: &site-mode private
   database-password: &database-password change-me-to-a-long-random-password
@@ -24,7 +25,8 @@ services:
       valkey:
         condition: service_healthy
     ports:
-      - "8080:4323"
+      - target: 4323
+        published: *port
     environment:
       BASE_URL: *site-address
       SITE_MODE: *site-mode

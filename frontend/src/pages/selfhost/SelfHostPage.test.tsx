@@ -41,13 +41,13 @@ describe("SelfHostPage", () => {
         );
     });
 
-    it("explains each of the four settings in the compose file", () => {
+    it("explains each of the five settings in the compose file", () => {
         // when
         renderWithProviders(<SelfHostPage />);
 
         // then
         const table = screen.getByRole("table", { name: "The settings at the top of docker-compose.yml" });
         const settings = Array.from(table.querySelectorAll("tbody th")).map(cell => cell.textContent);
-        expect(settings).toEqual(["site-address", "site-mode", "database-password", "database-admin-password"]);
+        expect(settings).toEqual(["port", "site-address", "site-mode", "database-password", "database-admin-password"]);
     });
 });

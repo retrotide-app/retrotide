@@ -11,8 +11,13 @@ import styles from "./SelfHostPage.module.css";
 
 const SETTINGS = [
     {
+        name: "port",
+        meaning: `The port on your server that RetroTide answers on. It starts as ${SELF_HOST_PORT}; pick any port nothing else uses. Change only this setting, never the 4323 under ports.`,
+    },
+    {
         name: "site-address",
-        meaning: `The address people type to reach RetroTide, such as https://retro.example.com. It must match exactly, or every page is refused. Without HTTPS it is http://your-server:${SELF_HOST_PORT}.`,
+        meaning:
+            "The address people type to reach RetroTide, such as https://retro.example.com. It must match exactly, or every page is refused. Without HTTPS it is http://your-server:your-port.",
     },
     {
         name: "site-mode",
@@ -38,7 +43,7 @@ export function SelfHostPage() {
             <MarketingHero
                 title="Self-host RetroTide"
                 eyebrow="Self-host"
-                lede="Run RetroTide on your own server with Docker. One file to download, four settings to fill in, and your retrospectives stay on your own infrastructure."
+                lede="Run RetroTide on your own server with Docker. One file to download, five settings to fill in, and your retrospectives stay on your own infrastructure."
             >
                 <ButtonLink href={SELF_HOST_COMPOSE_PATH} variant="primary" size="large" download="">
                     Download docker-compose.yml
@@ -59,7 +64,7 @@ export function SelfHostPage() {
                     </li>
                     <li>
                         <h3 className={styles.step}>Fill in the settings</h3>
-                        <p>Open docker-compose.yml. The settings are at the top, under x-settings. Change all four.</p>
+                        <p>Open docker-compose.yml. The settings are at the top, under x-settings. Fill in all five.</p>
                         <DataTable caption="The settings at the top of docker-compose.yml">
                             <thead>
                                 <tr>
@@ -82,7 +87,9 @@ export function SelfHostPage() {
                     <li>
                         <h3 className={styles.step}>Start it</h3>
                         <CommandBlock command="docker compose up -d" label="Start RetroTide" />
-                        <p>{`RetroTide answers on port ${SELF_HOST_PORT} within a minute, and sets up its database on the first start.`}</p>
+                        <p>
+                            RetroTide answers on your port within a minute, and sets up its database on the first start.
+                        </p>
                     </li>
                     <li>
                         <h3 className={styles.step}>Create the first account</h3>
@@ -96,7 +103,7 @@ export function SelfHostPage() {
 
             <MarketingSection
                 title="HTTPS"
-                intro={`Put a reverse proxy such as Caddy, nginx or Traefik in front of port ${SELF_HOST_PORT} for your domain, and set site-address to the https address.`}
+                intro="Put a reverse proxy such as Caddy, nginx or Traefik in front of your port for your domain, and set site-address to the https address."
             />
 
             <MarketingSection title="Updating">

@@ -30,6 +30,9 @@ export default defineConfig({
             "/robots.txt": {
                 target: goServer,
             },
+            "/self-host/docker-compose.yml": {
+                target: goServer,
+            },
         },
     },
     build: {
