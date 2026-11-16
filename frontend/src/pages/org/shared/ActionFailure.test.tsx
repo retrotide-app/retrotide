@@ -5,13 +5,13 @@ import { renderWithProviders } from "../../../test-utils/render";
 import { ActionFailure } from "./ActionFailure";
 
 describe("ActionFailure", () => {
-    it("says paid plans are coming when the plan's limit refused the action", () => {
+    it("names the plan's limit, without paid plans while pricing is hidden, when the limit refused the action", () => {
         // when
         renderWithProviders(<ActionFailure error={makeUpgradeRequiredError({ limit: "teams", allowed: 1 })} />);
 
         // then
         expect(screen.getByRole("alert")).toHaveTextContent("The free plan allows 1 team.");
-        expect(screen.getByRole("alert")).toHaveTextContent("Paid plans are coming.");
+        expect(screen.getByRole("alert")).not.toHaveTextContent("Paid plans");
     });
 
     it("shows the server's reason for any other refusal", () => {

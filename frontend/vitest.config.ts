@@ -4,6 +4,7 @@ export default defineConfig({
     test: {
         environment: "jsdom",
         pool: "vmThreads",
+        vmMemoryLimit: "1GB",
         globals: false,
         setupFiles: ["./src/test-utils/setup.ts"],
         include: ["src/**/*.test.{ts,tsx}"],

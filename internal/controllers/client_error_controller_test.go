@@ -52,10 +52,6 @@ func newClientErrorHarness(t *testing.T) *clientErrorHarness {
 	return &clientErrorHarness{Harness: h, log: buf}
 }
 
-func (h *clientErrorHarness) report(body dto.ClientErrorReportRequest) *testutil.Request {
-	return h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(body).WithRemoteAddr(clientErrorPeer)
-}
-
 func (h *clientErrorHarness) lines(t *testing.T) []map[string]any {
 	t.Helper()
 
@@ -88,7 +84,7 @@ func TestClientErrorController_LogsAReportOnceAndAnswersNoContent(t *testing.T) 
 	h := newClientErrorHarness(t)
 
 	// when
-	rec := h.report(boardCrash()).Record()
+	rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(boardCrash()).WithRemoteAddr(clientErrorPeer).Record()
 
 	// then
 	assert.Equal(t, http.StatusNoContent, rec.Code)
@@ -134,7 +130,7 @@ func TestClientErrorController_RefusesABodyOverFourKilobytes(t *testing.T) {
 	report.Message = strings.Repeat("a", maxClientErrorBodyBytes)
 
 	// when
-	rec := h.report(report).Record()
+	rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(report).WithRemoteAddr(clientErrorPeer).Record()
 
 	// then nothing of the oversized report reaches the log
 	assert.Equal(t, http.StatusRequestEntityTooLarge, rec.Code)
@@ -175,7 +171,7 @@ func TestClientErrorController_TruncatesLongFields(t *testing.T) {
 			tc.set(&report, strings.Repeat("x", tc.limit+100))
 
 			// when
-			rec := h.report(report).Record()
+			rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(report).WithRemoteAddr(clientErrorPeer).Record()
 
 			// then
 			assert.Equal(t, http.StatusNoContent, rec.Code)
@@ -194,7 +190,7 @@ func TestClientErrorController_TruncatesOnACharacterBoundary(t *testing.T) {
 	report.Message = strings.Repeat("€", maxClientErrorMessageLength/3+50)
 
 	// when
-	rec := h.report(report).Record()
+	rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(report).WithRemoteAddr(clientErrorPeer).Record()
 
 	// then the split character is dropped rather than logged as broken bytes
 	assert.Equal(t, http.StatusNoContent, rec.Code)
@@ -228,7 +224,7 @@ func TestClientErrorController_NeverLogsAConcretePathOrQuery(t *testing.T) {
 			report.Route = tc.route
 
 			// when
-			rec := h.report(report).Record()
+			rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(report).WithRemoteAddr(clientErrorPeer).Record()
 
 			// then the report still arrives, with the route blanked
 			assert.Equal(t, http.StatusNoContent, rec.Code)
@@ -246,15 +242,15 @@ func TestClientErrorController_IsRateLimitedPerIP(t *testing.T) {
 	h := newClientErrorHarness(t)
 
 	for i := range middleware.ClientErrorReportsPerMinute {
-		rec := h.report(boardCrash()).Record()
+		rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(boardCrash()).WithRemoteAddr(clientErrorPeer).Record()
 		require.Equal(t, http.StatusNoContent, rec.Code, "report %d", i+1)
 		assert.Equal(t, strconv.Itoa(middleware.ClientErrorReportsPerMinute), rec.Header().Get("X-RateLimit-Limit"))
 		assert.Equal(t, strconv.Itoa(middleware.ClientErrorReportsPerMinute-1-i), rec.Header().Get("X-RateLimit-Remaining"))
 	}
 
 	// when
-	limited := h.report(boardCrash()).Record()
-	elsewhere := h.report(boardCrash()).WithRemoteAddr("203.0.113.9:4444").Record()
+	limited := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(boardCrash()).WithRemoteAddr(clientErrorPeer).Record()
+	elsewhere := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(boardCrash()).WithRemoteAddr(clientErrorPeer).WithRemoteAddr("203.0.113.9:4444").Record()
 
 	// then the refused report is never logged, and another address keeps its own budget
 	assert.Equal(t, http.StatusTooManyRequests, limited.Code)
@@ -270,7 +266,7 @@ func TestClientErrorController_ChargesTheRateLimitForAnOversizedBody(t *testing.
 	report.Message = strings.Repeat("a", maxClientErrorBodyBytes)
 
 	// when
-	rec := h.report(report).Record()
+	rec := h.NewRequest(http.MethodPost, clientErrorsPath).WithJSONBody(report).WithRemoteAddr(clientErrorPeer).Record()
 
 	// then a flood of oversized bodies spends the same budget
 	assert.Equal(t, http.StatusRequestEntityTooLarge, rec.Code)
